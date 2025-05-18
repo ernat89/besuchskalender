@@ -5,16 +5,21 @@ const transporter = nodemailer.createTransport({
   port: 587,
   auth: {
     user: "b0776fcbd0493d",
-    pass: "bb193a4429e115" // ← Ersetze das Sternchen-Passwort von Mailtrap
+    pass: "bb193a4429e115" // ← dein echtes Passwort hier einfügen
   }
 });
 
-function sendConfirmationMail(email, name, date, start, end) {
+function sendConfirmationMail(email, name, date, start, end, token) {
+  const cancelLink = `https://deineseite.onrender.com/cancel.html?token=${token}`;
+
   const mailOptions = {
     from: '"Besuchskalender" <noreply@besuch.local>',
     to: email,
     subject: "Bestätigung deines Besuchs",
-    text: `Hallo ${name},\n\ndein Besuch am ${date} von ${start} bis ${end} wurde erfolgreich eingetragen.\n\nFalls du den Termin doch nicht wahrnehmen kannst, gib bitte rechtzeitig Bescheid.\n\nVielen Dank!\nDein Besuchs-Team`,
+    text: `Hallo ${name},\n
+dein Besuch am ${date} von ${start} bis ${end} wurde erfolgreich eingetragen.\n
+Wenn du absagen möchtest, kannst du deine Buchung hier stornieren:\n${cancelLink}\n\n
+Viele Grüße\nDein Besuchs-Team`
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
