@@ -1,63 +1,52 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <title>Besuchskalender</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Besuchskalender</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Besuchskalender</h1>
-    <p>Wähle einen Termin aus und trage dich ein. Die Termine helfen uns, Besuche besser zu planen.</p>
+  <h1>Besuchskalender</h1>
+  <p>Hier siehst du, welche Zeiten schon belegt sind. Klicke auf einen freien Slot, um einen Besuch einzutragen.</p>
 
+  <div id="calendar"></div>
+
+  <div id="bookingFormWrapper" style="display: none;">
+    <h2>Buchung eintragen</h2>
     <form id="bookingForm">
-        <label for="name">Vorname oder Initiale:</label><br>
-        <input type="text" id="name" name="name" required placeholder="z. B. Gisela oder G. M."><br><br>
+      <input type="hidden" id="selectedDate">
+      <input type="hidden" id="selectedTime">
 
-        <label for="email">E-Mail-Adresse:</label><br>
-        <input type="email" id="email" name="email" required><br><br>
+      <label for="name">Vorname oder Initiale:</label>
+      <input type="text" id="name" name="name" required placeholder="z. B. Gisela oder G. M.">
 
-        <label for="date">Datum:</label><br>
-        <input type="date" id="date" name="date" required><br><br>
+      <label for="email">E-Mail-Adresse:</label>
+      <input type="email" id="email" name="email" required>
 
-        <label for="time">Startzeit:</label><br>
-        <select id="time" name="time" required>
-            <option value="">-- Bitte Zeit wählen --</option>
-            <option value="13:00">13:00</option>
-            <option value="13:30">13:30</option>
-            <option value="14:00">14:00</option>
-            <option value="14:30">14:30</option>
-            <option value="15:00">15:00</option>
-            <option value="15:30">15:30</option>
-            <option value="16:00">16:00</option>
-            <option value="16:30">16:30</option>
-        </select><br><br>
+      <label for="duration">Dauer des Besuchs:</label>
+      <select id="duration" name="duration" required>
+        <option value="">-- Dauer wählen --</option>
+        <option value="30">30 Minuten</option>
+        <option value="60">1 Stunde</option>
+        <option value="90">1,5 Stunden</option>
+        <option value="120">2 Stunden</option>
+      </select>
 
-        <label for="duration">Dauer des Besuchs:</label><br>
-        <select id="duration" name="duration" required>
-            <option value="">-- Dauer wählen --</option>
-            <option value="30">30 Minuten</option>
-            <option value="60">1 Stunde</option>
-            <option value="90">1,5 Stunden</option>
-            <option value="120">2 Stunden</option>
-            <option value="150">2,5 Stunden</option>
-            <option value="180">3 Stunden</option>
-        </select><br><br>
+      <fieldset>
+        <legend>Bitte bestätigen:</legend>
+        <label><input type="checkbox" required> Ich bin gesund und symptomfrei.</label>
+        <label><input type="checkbox" required> Ich bin mit der Speicherung meiner Daten zur Besuchskoordination einverstanden.</label>
+        <label><input type="checkbox" required> Ich akzeptiere den Erhalt einer Bestätigung per E-Mail.</label>
+        <label><input type="checkbox" required> Diese Seite wird ausschließlich privat genutzt.</label>
+      </fieldset>
 
-        <fieldset>
-            <legend>Bitte bestätigen:</legend>
-            <label><input type="checkbox" required> Ich bin gesund und symptomfrei.</label><br>
-            <label><input type="checkbox" required> Ich bin damit einverstanden, dass meine Daten gespeichert werden, um Besuche zu koordinieren.</label><br>
-            <label><input type="checkbox" required> Ich akzeptiere, dass ich eine E-Mail zur Bestätigung bekomme.</label><br>
-            <label><input type="checkbox" required> Ich weiß, dass diese Seite nur privat genutzt wird und keine Daten weitergegeben werden.</label><br>
-        </fieldset><br>
-
-        <input type="submit" value="Besuch eintragen">
+      <input type="submit" value="Besuch eintragen">
     </form>
+  </div>
 
-    <p style="font-size: 0.8em; color: gray;">
-      Diese Seite dient ausschließlich privaten Zwecken zur Besuchskoordination im Familienkreis. Keine kommerzielle Nutzung. Keine Weitergabe von Daten.
-    </p>
-
-    <script src="calendar.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script src="calendar.js"></script>
 </body>
 </html>
