@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const calendarEl = document.getElementById("calendar");
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
-    locale: "de", // <-- Spracheinstellung
+    locale: "de", // Spracheinstellung
     initialView: 'timeGridDay',
     nowIndicator: true,
     slotDuration: '00:30:00',
@@ -46,34 +46,50 @@ document.addEventListener("DOMContentLoaded", function () {
 
     successCallback(events);
   }
-});
 
-document.getElementById("bookingForm").addEventListener("submit", async function (e) {
-  e.preventDefault();
+  document.getElementById("bookingForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const date = document.getElementById("selectedDate").value;
-  const time = document.getElementById("selectedTime").value;
-  const duration = document.getElementById("duration").value;
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const date = document.getElementById("selectedDate").value;
+    const time = document.getElementById("selectedTime").value;
+    const duration = document.getElementById("duration").value;
 
-  const payload = { name, email, date, time, duration };
+    const payload = { name, email, date, time, duration };
 
-  try {
-    const res = await fetch("/api/book", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
+    try {
+      const res = await fetch("/api/book", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
 
-    if (res.ok) {
-      alert("Buchung gespeichert!");
-      window.location.reload();
-    } else {
-      alert("Fehler beim Eintragen. Bitte prüfe deine Angaben.");
+      if (res.ok) {
+        showSuccessMessage("✅ Deine Buchung war erfolgreich. Du bekommst eine E-Mail zur Bestätigung.");
+
+        document.getElementById("bookingForm").reset();
+        document.getElementById("bookingFormWrapper").style.display = "none";
+
+        // Kalender aktualisieren oder Seite neuladen (wahlweise)
+        setTimeout(() => {
+          location.reload(); // oder: calendar.refetchEvents();
+        }, 3000);
+      } else {
+        alert("Fehler beim Eintragen. Bitte prüfe deine Angaben.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Serverfehler.");
     }
-  } catch (err) {
-    console.error(err);
-    alert("Serverfehler.");
+  });
+
+  function showSuccessMessage(msg) {
+    const msgBox = document.getElementById("successMessage");
+    msgBox.textContent = msg;
+    msgBox.style.display = "block";
+    setTimeout(() => {
+      msgBox.style.display = "none";
+    }, 10000);
   }
 });
