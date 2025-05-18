@@ -1,11 +1,10 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  host: "sandbox.smtp.mailtrap.io",
-  port: 587,
+  service: "gmail",
   auth: {
-    user: "b0776fcbd0493d",
-    pass: "bb193a4429e115" // ← dein echtes Passwort hier einfügen
+    user: "deineAdresse@gmail.com",
+    pass: "DEIN_APP_PASSWORT"
   }
 });
 
@@ -13,7 +12,7 @@ function sendConfirmationMail(email, name, date, start, end, token) {
   const cancelLink = `https://deineseite.onrender.com/cancel.html?token=${token}`;
 
   const mailOptions = {
-    from: '"Besuchskalender" <noreply@besuch.local>',
+    from: '"Besuchskalender" <besuch.aykanat@gmail.com>',
     to: email,
     subject: "Bestätigung deines Besuchs",
     text: `Hallo ${name},\n
