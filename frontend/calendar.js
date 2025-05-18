@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     initialView: "timeGridDay",
     slotDuration: "00:30:00",
     slotMinTime: "13:00:00",
-    slotMaxTime: "20:00:00",
+    slotMaxTime: "20:01:00",
     nowIndicator: true,
     selectable: true,
     allDaySlot: false,
