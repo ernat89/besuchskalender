@@ -1,76 +1,41 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <title>Besuchskalender</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div style="text-align:right; padding:10px;">
-    <label for="languageSwitcher">🌍 Sprache:</label>
-    <select id="languageSwitcher">
-      <option value="de" selected>Deutsch</option>
-      <option value="tr">Türkçe</option>
-      <option value="en">English</option>
+<div id="calendar" style="z-index: 0;"></div>
+
+<div id="bookingFormWrapper" style="display: none; position: relative; z-index: 10; margin-top: 2rem;">
+  <h2 style="text-align:center; color:#0077cc;">Besuch eintragen</h2>
+  <form id="bookingForm" style="max-width: 500px; margin: 0 auto;">
+    
+    <label for="name"><strong>Vorname oder Initiale:</strong></label>
+    <input type="text" id="name" name="name" placeholder="z. B. Gisela oder G. M." required>
+
+    <label for="email"><strong>E-Mail-Adresse:</strong></label>
+    <input type="email" id="email" name="email" required>
+
+    <input type="hidden" id="selectedDate" name="date">
+    <input type="hidden" id="selectedTime" name="time">
+
+    <label for="duration"><strong>Dauer des Besuchs:</strong></label>
+    <select id="duration" name="duration" required>
+      <option value="">-- Dauer wählen --</option>
+      <option value="30">30 Minuten</option>
+      <option value="60">1 Stunde</option>
+      <option value="90">1,5 Stunden</option>
+      <option value="120">2 Stunden</option>
+      <option value="150">2,5 Stunden</option>
+      <option value="180">3 Stunden</option>
     </select>
-  </div>
 
-  <h1 data-i18n="title">Besuchskalender</h1>
-  <p data-i18n="intro">Hier siehst du, welche Zeiten schon belegt sind...</p>
+    <div id="endTimeInfo" style="margin-top: 10px; font-weight: bold; color: #444;"></div>
 
-  <div id="calendar"></div>
+    <fieldset style="margin-top: 1rem;">
+      <legend><strong>Bitte bestätigen:</strong></legend>
+      <label><input type="checkbox" required> Ich bin gesund und symptomfrei.</label><br>
+      <label><input type="checkbox" required> Ich bin mit der Speicherung meiner Daten zur Besuchskoordination einverstanden.</label><br>
+      <label><input type="checkbox" required> Ich akzeptiere den Erhalt einer Bestätigung per E-Mail.</label><br>
+      <label><input type="checkbox" required> Diese Seite wird ausschließlich privat genutzt.</label>
+    </fieldset>
 
-  <div id="bookingFormWrapper" style="display: none;">
-    <h2 data-i18n="form.submit">Besuch eintragen</h2>
-    <form id="bookingForm">
-      <input type="hidden" id="selectedDate">
-      <input type="hidden" id="selectedTime">
+    <div id="successMessage" style="margin-top: 1rem; display: none; font-weight: bold; color: green;"></div>
 
-      <label for="name" data-i18n="form.nameLabel">Vorname oder Initiale:</label>
-      <input type="text" id="name" name="name" required placeholder="z. B. Gisela oder G. M.">
-
-      <label for="email" data-i18n="form.emailLabel">E-Mail-Adresse:</label>
-      <input type="email" id="email" name="email" required>
-
-      <label for="duration" data-i18n="form.durationLabel">Dauer des Besuchs:</label>
-      <select id="duration" name="duration" required>
-        <option value="">-- Dauer wählen --</option>
-        <option value="30">30 Minuten</option>
-        <option value="60">1 Stunde</option>
-        <option value="90">1,5 Stunden</option>
-        <option value="120">2 Stunden</option>
-      </select>
-
-      <fieldset>
-        <legend data-i18n="form.confirm">Bitte bestätigen:</legend>
-        <label><input type="checkbox" required> <span data-i18n="form.check1">Ich bin gesund...</span></label>
-        <label><input type="checkbox" required> <span data-i18n="form.check2">Ich bin mit Speicherung...</span></label>
-        <label><input type="checkbox" required> <span data-i18n="form.check3">Ich akzeptiere E-Mail...</span></label>
-        <label><input type="checkbox" required> <span data-i18n="form.check4">Diese Seite...</span></label>
-      </fieldset>
-
-      <input type="submit" value="Besuch eintragen" data-i18n="form.submit">
-    </form>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.global.min.js"></script>
-  <script src="calendar.js"></script>
-  <script src="i18n.js"></script>
-  <script>
-    const switcher = document.getElementById("languageSwitcher");
-    switcher.addEventListener("change", () => {
-      localStorage.setItem("lang", switcher.value);
-      applyTranslations(switcher.value);
-    });
-
-    const lang = localStorage.getItem("lang") || "de";
-    switcher.value = lang;
-    applyTranslations(lang);
-  </script>
-</body>
-  <div id="successMessage" style="display:none; text-align:center; color:green; margin-top:20px; font-weight:bold;"></div>
-
-</html>
+    <button type="submit" style="margin-top: 1rem;">Besuch eintragen</button>
+  </form>
+</div>
