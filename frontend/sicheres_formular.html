@@ -1,0 +1,30 @@
+
+<form id="bookingForm">
+  <label for="name">Vorname oder Initiale:</label><br>
+  <input type="text" id="name" name="name" required placeholder="z. B. Gisela oder G. M."><br><br>
+
+  <label for="email">E-Mail-Adresse:</label><br>
+  <input type="email" id="email" name="email" required><br><br>
+
+  <label for="date">Datum:</label><br>
+  <input type="date" id="date" name="date" required><br><br>
+
+  <label for="time">Uhrzeit:</label><br>
+  <select id="time" name="time" required>
+    <option value="">-- Bitte Zeit wählen --</option>
+    <option value="13:00">13:00 - 13:30</option>
+    <option value="13:30">13:30 - 14:00</option>
+    <option value="14:00">14:00 - 14:30</option>
+    <option value="14:30">14:30 - 15:00</option>
+  </select><br><br>
+
+  <fieldset>
+    <legend>Bitte bestätigen:</legend>
+    <label><input type="checkbox" required> Ich bin gesund und symptomfrei.</label><br>
+    <label><input type="checkbox" required> Ich bin damit einverstanden, dass meine Daten gespeichert werden, um Besuche zu koordinieren.</label><br>
+    <label><input type="checkbox" required> Ich akzeptiere, dass ich eine E-Mail zur Bestätigung bekomme.</label><br>
+    <label><input type="checkbox" required> Ich weiß, dass diese Seite nur privat genutzt wird und keine Daten weitergegeben werden.</label><br>
+  </fieldset><br>
+
+  <input type="submit" value="Besuch eintragen">
+</form>
