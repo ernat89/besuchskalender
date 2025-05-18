@@ -1,29 +1,22 @@
 document.addEventListener("DOMContentLoaded", function () {
   const calendarEl = document.getElementById("calendar");
-  const lang = localStorage.getItem("lang") || "de";
-
   const calendar = new FullCalendar.Calendar(calendarEl, {
-    locale: lang,
-    initialView: 'timeGridDay',
-    nowIndicator: true,
-    allDaySlot: false,
+    locale: "de",
+    initialView: "timeGridDay",
+    slotDuration: "00:30:00",
     slotMinTime: "13:00:00",
     slotMaxTime: "20:00:00",
-    slotDuration: "00:30:00",
-    contentHeight: "auto",
-    expandRows: true,
+    nowIndicator: true,
+    allDaySlot: false,
+    selectable: false,
     headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: ''
+      left: "prev,next today",
+      center: "title",
+      right: ""
     },
     events: fetchEvents,
     dateClick: function (info) {
       showForm(info.dateStr);
-    },
-    slotClick: function (info) {
-      const iso = info.date.toISOString();
-      showForm(iso);
     }
   });
 
@@ -35,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const bookings = await res.json();
 
     const events = bookings.map(b => ({
-      title: `${b.start} - ${b.end}\nBelegt`,
+      title: "Belegt",
       start: `${b.date}T${b.start}`,
       end: `${b.date}T${b.end}`,
       backgroundColor: "#ff4d4d",
@@ -48,15 +41,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function showForm(fullDateTime) {
     const [selectedDate, selectedTime] = fullDateTime.split("T");
-    const cleanTime = selectedTime?.substring(0, 5);
-
-    if (!selectedDate || !cleanTime) return;
-
+    const time = selectedTime.substring(0, 5);
     document.getElementById("selectedDate").value = selectedDate;
-    document.getElementById("selectedTime").value = cleanTime;
+    document.getElementById("selectedTime").value = time;
     document.getElementById("bookingFormWrapper").style.display = "block";
-    document.getElementById("name").focus();
-    updateEndTime(); // gleich Endzeit anzeigen
+    updateEndTime();
   }
 
   document.getElementById("bookingForm").addEventListener("submit", async function (e) {
@@ -78,28 +67,19 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       if (res.ok) {
-        showSuccessMessage("✅ Deine Buchung war erfolgreich. Du bekommst eine E-Mail zur Bestätigung.");
         document.getElementById("bookingForm").reset();
         document.getElementById("bookingFormWrapper").style.display = "none";
-        document.getElementById("endTimeInfo").textContent = "";
+        document.getElementById("successMessage").textContent = "✅ Buchung erfolgreich!";
+        document.getElementById("successMessage").style.display = "block";
         setTimeout(() => location.reload(), 3000);
       } else {
-        alert("Fehler beim Eintragen. Bitte prüfe deine Angaben.");
+        alert("Fehler bei der Buchung.");
       }
     } catch (err) {
       console.error(err);
       alert("Serverfehler.");
     }
   });
-
-  function showSuccessMessage(msg) {
-    const msgBox = document.getElementById("successMessage");
-    msgBox.textContent = msg;
-    msgBox.style.display = "block";
-    setTimeout(() => {
-      msgBox.style.display = "none";
-    }, 10000);
-  }
 
   document.getElementById("duration").addEventListener("change", updateEndTime);
 
@@ -114,12 +94,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const [hour, minute] = timeStr.split(":").map(Number);
-    const startDate = new Date();
-    startDate.setHours(hour, minute, 0, 0);
-    startDate.setMinutes(startDate.getMinutes() + duration);
+    const start = new Date();
+    start.setHours(hour);
+    start.setMinutes(minute + duration);
 
-    const endHour = String(startDate.getHours()).padStart(2, "0");
-    const endMinute = String(startDate.getMinutes()).padStart(2, "0");
+    const endHour = String(start.getHours()).padStart(2, "0");
+    const endMinute = String(start.getMinutes()).padStart(2, "0");
 
     infoBox.textContent = `Ende des Besuchs: ${endHour}:${endMinute} Uhr`;
   }
