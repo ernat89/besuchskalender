@@ -10,9 +10,20 @@ h1, h2 {
   color: #0077cc;
 }
 
+#calendar {
+  position: relative;
+  z-index: 0;
+  margin-bottom: 2rem;
+}
+
+#bookingFormWrapper {
+  position: relative;
+  z-index: 10;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
 form {
-  max-width: 500px;
-  margin: 30px auto;
   background: white;
   padding: 25px;
   border-radius: 10px;
@@ -36,6 +47,15 @@ select {
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 1em;
+  box-sizing: border-box;
+}
+
+#endTimeInfo {
+  margin-top: -10px;
+  margin-bottom: 15px;
+  font-weight: bold;
+  color: #444;
+  text-align: left;
 }
 
 fieldset {
@@ -65,7 +85,9 @@ fieldset input[type="checkbox"] {
   vertical-align: middle;
 }
 
-input[type="submit"] {
+input[type="submit"],
+button[type="submit"],
+button {
   background: #0077cc;
   color: white;
   border: none;
@@ -77,22 +99,32 @@ input[type="submit"] {
   transition: background 0.2s ease;
 }
 
-input[type="submit"]:hover {
+input[type="submit"]:hover,
+button[type="submit"]:hover,
+button:hover {
   background: #005fa3;
+}
+
+#successMessage {
+  color: green;
+  margin-top: 10px;
+  font-weight: bold;
+  text-align: center;
 }
 
 @media (max-width: 600px) {
   form {
     padding: 20px;
-    margin: 20px;
+    margin: 0 10px;
+  }
+
+  #bookingFormWrapper {
+    margin-top: 30px;
   }
 }
-.fc .fc-daygrid-day, 
+
+/* FullCalendar mobile click fix */
+.fc .fc-daygrid-day,
 .fc .fc-timegrid-slot {
   touch-action: manipulation;
-}
-height: "auto",
-contentHeight: "auto",
-expandRows: true,
-  }
 }
