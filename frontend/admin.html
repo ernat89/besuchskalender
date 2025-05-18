@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Übersicht</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #0077cc;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      margin-top: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    th {
+      background: #0077cc;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <h1>Alle Buchungen</h1>
+  <table id="bookingTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>E-Mail</th>
+        <th>Datum</th>
+        <th>Start</th>
+        <th>Ende</th>
+        <th>Token</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function loadBookings() {
+      const today = new Date().toISOString().split("T")[0];
+      const res = await fetch("/api/bookings?date=" + today);
+      const data = await res.json();
+      const tbody = document.querySelector("#bookingTable tbody");
+
+      if (data.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='6'>Keine Buchungen gefunden.</td></tr>";
+        return;
+      }
+
+      tbody.innerHTML = "";
+      data.forEach(b => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${b.name}</td>
+          <td>${b.email}</td>
+          <td>${b.date}</td>
+          <td>${b.start}</td>
+          <td>${b.end}</td>
+          <td>${b.token}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    loadBookings();
+  </script>
+</body>
+</html>
