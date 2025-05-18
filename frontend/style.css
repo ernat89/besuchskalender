@@ -87,3 +87,7 @@ input[type="submit"]:hover {
     margin: 20px;
   }
 }
+.fc .fc-daygrid-day, 
+.fc .fc-timegrid-slot {
+  touch-action: manipulation;
+}
