@@ -3,22 +3,19 @@ const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "deineAdresse@gmail.com",
-    pass: "DEIN_APP_PASSWORT"
+    user: "besuche.aykanat@gmail.com",
+    pass: "mdjs yhzt jmai ocbc"
   }
 });
 
 function sendConfirmationMail(email, name, date, start, end, token) {
-  const cancelLink = `https://deineseite.onrender.com/cancel.html?token=${token}`;
+  const cancelLink = `https://besuchskalender.onrender.com/cancel.html?token=${token}`;
 
   const mailOptions = {
-    from: '"Besuchskalender" <besuch.aykanat@gmail.com>',
+    from: '"Besuchskalender" <besuche.aykanat@gmail.com>',
     to: email,
-    subject: "Bestätigung deines Besuchs",
-    text: `Hallo ${name},\n
-dein Besuch am ${date} von ${start} bis ${end} wurde erfolgreich eingetragen.\n
-Wenn du absagen möchtest, kannst du deine Buchung hier stornieren:\n${cancelLink}\n\n
-Viele Grüße\nDein Besuchs-Team`
+    subject: "Dein Besuch ist eingetragen ✅",
+    text: `Hallo ${name},\n\nDein Besuch am ${date} von ${start} bis ${end} wurde erfolgreich eingetragen.\n\nWenn du doch nicht kommen kannst, kannst du hier stornieren:\n${cancelLink}\n\nViele Grüße\nBesuchsteam`
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
