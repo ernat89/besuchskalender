@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const calendarEl = document.getElementById("calendar");
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
+    locale: "de", // <-- Spracheinstellung
     initialView: 'timeGridDay',
     nowIndicator: true,
     slotDuration: '00:30:00',
