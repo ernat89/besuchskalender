@@ -2,10 +2,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const calendarEl = document.getElementById("calendar");
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
-    plugins: [
-      FullCalendar.TimeGridPlugin,
-      FullCalendar.InteractionPlugin
-    ],
     locale: "de",
     initialView: "timeGridDay",
     slotDuration: "00:30:00",
@@ -14,6 +10,8 @@ document.addEventListener("DOMContentLoaded", function () {
     nowIndicator: true,
     allDaySlot: false,
     selectable: true,
+    expandRows: true,
+    contentHeight: "auto",
     headerToolbar: {
       left: "prev,next today",
       center: "title",
@@ -42,12 +40,45 @@ document.addEventListener("DOMContentLoaded", function () {
       start: `${b.date}T${b.start}`,
       end: `${b.date}T${b.end}`,
       backgroundColor: "#ff4d4d",
-      borderColor: "#cc0000`,
+      borderColor: "#cc0000",
       display: "block"
     }));
 
     successCallback(events);
   }
+
+  document.getElementById("bookingForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const date = document.getElementById("selectedDate").value;
+    const time = document.getElementById("selectedTime").value;
+    const duration = document.getElementById("duration").value;
+
+    const payload = { name, email, date, time, duration };
+
+    try {
+      const res = await fetch("/api/book", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        document.getElementById("bookingForm").reset();
+        document.getElementById("bookingFormWrapper").style.display = "none";
+        document.getElementById("successMessage").textContent = "✅ Buchung erfolgreich!";
+        document.getElementById("successMessage").style.display = "block";
+        setTimeout(() => location.reload(), 3000);
+      } else {
+        alert("Fehler bei der Buchung.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Serverfehler.");
+    }
+  });
 
   document.getElementById("duration").addEventListener("change", updateEndTime);
 
