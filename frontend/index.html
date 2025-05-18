@@ -47,6 +47,22 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script>
+    FullCalendar.globalLocales.push({
+      code: "de",
+      week: { dow: 1 },
+      buttonText: {
+        today: "Heute",
+        month: "Monat",
+        week: "Woche",
+        day: "Tag",
+        list: "Liste"
+      },
+      allDayText: "Ganztägig",
+      moreLinkText: "mehr",
+      noEventsText: "Keine Termine vorhanden"
+    });
+  </script>
   <script src="calendar.js"></script>
 </body>
 </html>
