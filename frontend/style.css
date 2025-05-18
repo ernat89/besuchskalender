@@ -86,3 +86,12 @@ input[type="submit"]:hover {
 .fc .fc-timegrid-slot {
   touch-action: manipulation;
 }
+#calendar {
+  position: relative;
+  z-index: 0 !important;
+}
+
+#bookingFormWrapper {
+  position: relative;
+  z-index: 10;
+}
