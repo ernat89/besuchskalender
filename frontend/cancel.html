@@ -1,1 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Buchung stornieren</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      padding: 30px;
+      text-align: center;
+    }
+    h1 {
+      color: #c00;
+    }
+    p {
+      font-size: 1.1em;
+      margin-top: 20px;
+    }
+    #languageSwitcher {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <label for="languageSwitcher">🌍 Sprache:</label>
+    <select id="languageSwitcher">
+      <option value="de" selected>Deutsch</option>
+      <option value="tr">Türkçe</option>
+      <option value="en">English</option>
+    </select>
+  </div>
 
+  <h1 data-i18n="cancel.title">Buchung stornieren</h1>
+  <p id="status" data-i18n="cancel.waiting">Bitte warten...</p>
+
+  <script src="i18n.js"></script>
+  <script>
+    const switcher = document.getElementById("languageSwitcher");
+    switcher.addEventListener("change", () => {
+      localStorage.setItem("lang", switcher.value);
+      applyTranslations(switcher.value);
+    });
+
+    const lang = localStorage.getItem("lang") || "de";
+    switcher.value = lang;
+    applyTranslations(lang);
+
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+
+    if (!token) {
+      document.getElementById("status").textContent = {
+        de: "Fehler: Kein Token übergeben.",
+        tr: "Hata: Token gönderilmedi.",
+        en: "Error: No token provided."
+      }[lang];
+    } else {
+      fetch("/api/cancel?token=" + token)
+        .then(res => res.text())
+        .then(msg => {
+          document.getElementById("status").textContent = msg;
+        })
+        .catch(() => {
+          document.getElementById("status").textContent = translations[lang].cancel.error;
+        });
+    }
+  </script>
+</body>
+</html>
