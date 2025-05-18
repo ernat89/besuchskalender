@@ -4,27 +4,29 @@ const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: "besuche.aykanat@gmail.com",
-    pass: "mdjs yhzt jmai ocbc"
+    pass: "mdjsyhztjmaiocbc" // kein normales Passwort, nur App-Passwort!
   }
 });
 
-function sendConfirmationMail(email, name, date, start, end, token) {
-  const cancelLink = `https://besuchskalender.onrender.com/cancel.html?token=${token}`;
-
+async function sendConfirmationMail(to, token) {
+  const link = `https://besuchskalender.onrender.com/storno/${token}`;
   const mailOptions = {
     from: '"Besuchskalender" <besuche.aykanat@gmail.com>',
-    to: email,
-    subject: "Dein Besuch ist eingetragen ✅",
-    text: `Hallo ${name},\n\nDein Besuch am ${date} von ${start} bis ${end} wurde erfolgreich eingetragen.\n\nWenn du doch nicht kommen kannst, kannst du hier stornieren:\n${cancelLink}\n\nViele Grüße\nBesuchsteam`
+    to,
+    subject: "Deine Buchung im Besuchskalender",
+    html: `
+      <p>✅ Danke für deine Buchung.</p>
+      <p>Wenn du absagen willst, klick hier:</p>
+      <a href="${link}">${link}</a>
+    `
   };
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error("Fehler beim Senden der Mail:", error);
-    } else {
-      console.log("Bestätigung gesendet:", info.response);
-    }
-  });
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("📧 Mail gesendet an:", to);
+  } catch (err) {
+    console.error("❌ Fehler beim Mailversand:", err);
+  }
 }
 
 module.exports = { sendConfirmationMail };
