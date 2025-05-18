@@ -1,16 +1,18 @@
 document.addEventListener("DOMContentLoaded", function () {
   const calendarEl = document.getElementById("calendar");
 
+  const lang = localStorage.getItem("lang") || "de";
+
   const calendar = new FullCalendar.Calendar(calendarEl, {
-    locale: localStorage.getItem("lang") || "de", // Spracheinstellung
+    locale: lang,
     initialView: 'timeGridDay',
     nowIndicator: true,
-    slotDuration: '00:30:00',
     allDaySlot: false,
     slotMinTime: "13:00:00",
     slotMaxTime: "20:00:00",
-    height: "auto",
-    selectable: false,
+    slotDuration: "00:30:00",
+    contentHeight: "auto",
+    expandRows: true,
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
@@ -18,13 +20,11 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     events: fetchEvents,
     dateClick: function (info) {
-      const selectedDate = info.dateStr.split("T")[0];
-      const selectedTime = info.dateStr.split("T")[1].substring(0, 5);
-
-      document.getElementById("selectedDate").value = selectedDate;
-      document.getElementById("selectedTime").value = selectedTime;
-      document.getElementById("bookingFormWrapper").style.display = "block";
-      document.getElementById("name").focus();
+      // Fallback – falls slotClick nicht greift
+      showForm(info.dateStr);
+    },
+    slotClick: function (info) {
+      showForm(info.dateStr);
     }
   });
 
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const bookings = await res.json();
 
     const events = bookings.map(b => ({
-      title: "Belegt",
+      title: `${b.start} - ${b.end}\nBelegt`,
       start: `${b.date}T${b.start}`,
       end: `${b.date}T${b.end}`,
       backgroundColor: "#ff4d4d",
@@ -45,6 +45,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }));
 
     successCallback(events);
+  }
+
+  function showForm(fullDateTime) {
+    const [selectedDate, selectedTime] = fullDateTime.split("T");
+    const cleanTime = selectedTime?.substring(0, 5);
+
+    if (!selectedDate || !cleanTime) return;
+
+    document.getElementById("selectedDate").value = selectedDate;
+    document.getElementById("selectedTime").value = cleanTime;
+    document.getElementById("bookingFormWrapper").style.display = "block";
+    document.getElementById("name").focus();
   }
 
   document.getElementById("bookingForm").addEventListener("submit", async function (e) {
@@ -67,14 +79,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (res.ok) {
         showSuccessMessage("✅ Deine Buchung war erfolgreich. Du bekommst eine E-Mail zur Bestätigung.");
-
         document.getElementById("bookingForm").reset();
         document.getElementById("bookingFormWrapper").style.display = "none";
-
-        // Kalender aktualisieren oder Seite neuladen (wahlweise)
-        setTimeout(() => {
-          location.reload(); // oder: calendar.refetchEvents();
-        }, 3000);
+        setTimeout(() => location.reload(), 3000);
       } else {
         alert("Fehler beim Eintragen. Bitte prüfe deine Angaben.");
       }
