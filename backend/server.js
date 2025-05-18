@@ -3,7 +3,8 @@ const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 const { sendConfirmationMail } = require("./mailer");
-
+// ...nachdem du die Buchung gespeichert hast:
+await sendConfirmationMail(email, token);
 const app = express();
 const port = process.env.PORT || 3000;
 
