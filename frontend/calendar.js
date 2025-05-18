@@ -106,3 +106,28 @@ document.addEventListener("DOMContentLoaded", function () {
     infoBox.textContent = `Ende des Besuchs: ${endHour}:${endMinute} Uhr`;
   }
 });
+const calendar = new FullCalendar.Calendar(calendarEl, {
+  locale: "de",
+  initialView: "timeGridDay",
+  slotDuration: "00:30:00",
+  slotMinTime: "13:00:00",
+  slotMaxTime: "20:30:00", // erweitert das letzte sichtbare Zeitfenster
+  nowIndicator: true,
+  allDaySlot: false,
+  selectable: true,
+  expandRows: true,
+  contentHeight: "auto",
+  headerToolbar: {
+    left: "prev,next today",
+    center: "title",
+    right: ""
+  },
+  events: fetchEvents,
+  dateClick: function (info) {
+    const [date, time] = info.dateStr.split("T");
+    document.getElementById("selectedDate").value = date;
+    document.getElementById("selectedTime").value = time.substring(0, 5);
+    document.getElementById("bookingFormWrapper").style.display = "block";
+    updateEndTime();
+  }
+});
