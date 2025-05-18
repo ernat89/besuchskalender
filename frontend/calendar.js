@@ -1,42 +1,59 @@
-// Liste aller möglichen Zeitfenster
-const timeOptions = [
-  "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30"
-];
+document.addEventListener("DOMContentLoaded", function () {
+  const calendarEl = document.getElementById("calendar");
 
-// Wenn Datum ausgewählt → Buchungen laden
-document.getElementById("date").addEventListener("change", async function () {
-  const date = this.value;
-  const timeSelect = document.getElementById("time");
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'timeGridDay',
+    nowIndicator: true,
+    slotDuration: '00:30:00',
+    allDaySlot: false,
+    slotMinTime: "13:00:00",
+    slotMaxTime: "17:00:00",
+    height: "auto",
+    selectable: true,
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: ''
+    },
+    events: fetchEvents,
+    dateClick: function (info) {
+      const selectedDate = info.dateStr.split("T")[0];
+      const selectedTime = info.dateStr.split("T")[1].substring(0, 5);
 
-  // Lade Buchungen für dieses Datum
-  const res = await fetch(`/api/bookings?date=${date}`);
-  const bookings = await res.json();
-
-  // Blockierte Startzeiten extrahieren
-  const blocked = bookings.map(b => b.start);
-
-  // Dropdown neu aufbauen
-  timeSelect.innerHTML = '<option value="">-- Bitte Zeit wählen --</option>';
-  timeOptions.forEach(time => {
-    const option = document.createElement("option");
-    option.value = time;
-    option.textContent = `${time}`;
-    if (blocked.includes(time)) {
-      option.disabled = true;
-      option.textContent += " (belegt)";
+      document.getElementById("selectedDate").value = selectedDate;
+      document.getElementById("selectedTime").value = selectedTime;
+      document.getElementById("bookingFormWrapper").style.display = "block";
+      document.getElementById("name").focus();
     }
-    timeSelect.appendChild(option);
   });
+
+  calendar.render();
+
+  async function fetchEvents(info, successCallback, failureCallback) {
+    const startDate = info.startStr.split("T")[0];
+    const res = await fetch(`/api/bookings?date=${startDate}`);
+    const bookings = await res.json();
+
+    const events = bookings.map(b => ({
+      title: "Belegt",
+      start: `${b.date}T${b.start}`,
+      end: `${b.date}T${b.end}`,
+      backgroundColor: "#ff4d4d",
+      borderColor: "#cc0000",
+      display: "block"
+    }));
+
+    successCallback(events);
+  }
 });
 
-// Formular absenden
 document.getElementById("bookingForm").addEventListener("submit", async function (e) {
   e.preventDefault();
 
   const name = document.getElementById("name").value;
   const email = document.getElementById("email").value;
-  const date = document.getElementById("date").value;
-  const time = document.getElementById("time").value;
+  const date = document.getElementById("selectedDate").value;
+  const time = document.getElementById("selectedTime").value;
   const duration = document.getElementById("duration").value;
 
   const payload = { name, email, date, time, duration };
@@ -49,15 +66,13 @@ document.getElementById("bookingForm").addEventListener("submit", async function
     });
 
     if (res.ok) {
-      alert("Danke, deine Buchung wurde gespeichert!");
-      document.getElementById("bookingForm").reset();
-      // Zeitliste neu laden, damit "belegt"-Status sichtbar wird
-      document.getElementById("date").dispatchEvent(new Event("change"));
+      alert("Buchung gespeichert!");
+      window.location.reload();
     } else {
-      alert("Es gab ein Problem beim Speichern.");
+      alert("Fehler beim Eintragen. Bitte prüfe deine Angaben.");
     }
   } catch (err) {
-    console.error("Fehler beim Absenden:", err);
-    alert("Verbindungsfehler.");
+    console.error(err);
+    alert("Serverfehler.");
   }
 });
