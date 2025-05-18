@@ -20,7 +20,7 @@
       color: #0077cc;
     }
     #authSection, #adminContent {
-      max-width: 700px;
+      max-width: 800px;
       margin: 30px auto;
       background: white;
       padding: 20px;
@@ -59,6 +59,19 @@
     tr:nth-child(even) {
       background: #f9f9f9;
     }
+    td button {
+      background-color: #cc0000;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .logout-btn {
+      float: right;
+      background: #888;
+      margin-top: -30px;
+    }
   </style>
 </head>
 <body>
@@ -81,6 +94,7 @@
   </div>
 
   <div id="adminContent" style="display: none;">
+    <button class="logout-btn" onclick="logout()">Logout</button>
     <h2 data-i18n="admin.tableHeading">Alle Buchungen</h2>
     <table id="bookingTable">
       <thead>
@@ -91,6 +105,7 @@
           <th>Start</th>
           <th>Ende</th>
           <th>Token</th>
+          <th>Aktion</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -101,15 +116,36 @@
   <script>
     const ADMIN_PASSWORD = "ErNat1989!";
 
+    const lang = localStorage.getItem("lang") || "de";
+    const switcher = document.getElementById("languageSwitcher");
+    switcher.value = lang;
+    applyTranslations(lang);
+
+    switcher.addEventListener("change", () => {
+      localStorage.setItem("lang", switcher.value);
+      applyTranslations(switcher.value);
+    });
+
+    if (localStorage.getItem("adminLoggedIn") === "true") {
+      document.addEventListener("DOMContentLoaded", () => {
+        showAdminContent();
+      });
+    }
+
     function checkPassword() {
       const entered = document.getElementById("adminPassword").value;
       if (entered === ADMIN_PASSWORD) {
-        document.getElementById("authSection").style.display = "none";
-        document.getElementById("adminContent").style.display = "block";
-        loadBookings();
+        localStorage.setItem("adminLoggedIn", "true");
+        showAdminContent();
       } else {
         document.getElementById("authStatus").textContent = translations[lang].admin.wrong;
       }
+    }
+
+    function showAdminContent() {
+      document.getElementById("authSection").style.display = "none";
+      document.getElementById("adminContent").style.display = "block";
+      loadBookings();
     }
 
     async function loadBookings() {
@@ -119,7 +155,7 @@
       const tbody = document.querySelector("#bookingTable tbody");
 
       if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6">${translations[lang].admin.noBookings}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7">${translations[lang].admin.noBookings}</td></tr>`;
         return;
       }
 
@@ -133,20 +169,29 @@
           <td>${b.start}</td>
           <td>${b.end}</td>
           <td>${b.token}</td>
+          <td><button onclick="deleteBooking('${b.token}')">🗑️</button></td>
         `;
         tbody.appendChild(row);
       });
     }
 
-    const switcher = document.getElementById("languageSwitcher");
-    switcher.addEventListener("change", () => {
-      localStorage.setItem("lang", switcher.value);
-      applyTranslations(switcher.value);
-    });
+    function deleteBooking(token) {
+      if (!confirm("Willst du diesen Eintrag wirklich löschen?")) return;
+      fetch("/api/cancel?token=" + token)
+        .then(res => res.text())
+        .then(() => {
+          alert("Eintrag gelöscht.");
+          loadBookings();
+        })
+        .catch(() => {
+          alert("Fehler beim Löschen.");
+        });
+    }
 
-    const lang = localStorage.getItem("lang") || "de";
-    switcher.value = lang;
-    applyTranslations(lang);
+    function logout() {
+      localStorage.removeItem("adminLoggedIn");
+      location.reload();
+    }
   </script>
 </body>
 </html>
