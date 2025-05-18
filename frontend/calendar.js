@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     slotMinTime: "13:00:00",
     slotMaxTime: "20:00:00",
     height: "auto",
-    selectable: true,
+    selectable: false,
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
