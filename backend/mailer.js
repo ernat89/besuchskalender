@@ -4,24 +4,24 @@ const transporter = nodemailer.createTransport({
   host: "smtp.mailtrap.io",
   port: 587,
   auth: {
-    user: "DEIN_MAILTRAP_USER",
-    pass: "DEIN_MAILTRAP_PASS"
+    user: "DEIN_USERNAME",
+    pass: "DEIN_PASSWORT"
   }
 });
 
 function sendConfirmationMail(email, name, date, start, end) {
   const message = {
-    from: "kalender@deine-domain.de",
+    from: "kalender@besuch.local",
     to: email,
-    subject: "Deine Buchung beim Besuchskalender",
-    text: `Hallo ${name},\n\ndu hast einen Besuch gebucht am ${date} von ${start} bis ${end}.\n\nBis bald!`
+    subject: "Deine Besuchsbestätigung",
+    text: `Hallo ${name},\n\ndu hast erfolgreich einen Besuch gebucht am ${date} von ${start} bis ${end}.\n\nViele Grüße!`
   };
 
   transporter.sendMail(message, (err, info) => {
     if (err) {
-      console.error("Mail Fehler:", err);
+      console.error("E-Mail Fehler:", err);
     } else {
-      console.log("Bestätigungsmail gesendet:", info.messageId);
+      console.log("E-Mail gesendet:", info.messageId);
     }
   });
 }
