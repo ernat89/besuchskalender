@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
   const calendarEl = document.getElementById("calendar");
-
   const lang = localStorage.getItem("lang") || "de";
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -20,14 +19,12 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     events: fetchEvents,
     dateClick: function (info) {
-      // Fallback – falls slotClick nicht greift
       showForm(info.dateStr);
     },
     slotClick: function (info) {
-  const clickedDate = info.date; // echtes Date-Objekt
-  const iso = clickedDate.toISOString(); // z. B. "2025-05-18T14:30:00.000Z"
-  showForm(iso);
-}
+      const iso = info.date.toISOString();
+      showForm(iso);
+    }
   });
 
   calendar.render();
@@ -59,6 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("selectedTime").value = cleanTime;
     document.getElementById("bookingFormWrapper").style.display = "block";
     document.getElementById("name").focus();
+    updateEndTime(); // gleich Endzeit anzeigen
   }
 
   document.getElementById("bookingForm").addEventListener("submit", async function (e) {
@@ -83,6 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
         showSuccessMessage("✅ Deine Buchung war erfolgreich. Du bekommst eine E-Mail zur Bestätigung.");
         document.getElementById("bookingForm").reset();
         document.getElementById("bookingFormWrapper").style.display = "none";
+        document.getElementById("endTimeInfo").textContent = "";
         setTimeout(() => location.reload(), 3000);
       } else {
         alert("Fehler beim Eintragen. Bitte prüfe deine Angaben.");
@@ -100,5 +99,28 @@ document.addEventListener("DOMContentLoaded", function () {
     setTimeout(() => {
       msgBox.style.display = "none";
     }, 10000);
+  }
+
+  document.getElementById("duration").addEventListener("change", updateEndTime);
+
+  function updateEndTime() {
+    const timeStr = document.getElementById("selectedTime").value;
+    const duration = parseInt(document.getElementById("duration").value, 10);
+    const infoBox = document.getElementById("endTimeInfo");
+
+    if (!timeStr || isNaN(duration)) {
+      infoBox.textContent = "";
+      return;
+    }
+
+    const [hour, minute] = timeStr.split(":").map(Number);
+    const startDate = new Date();
+    startDate.setHours(hour, minute, 0, 0);
+    startDate.setMinutes(startDate.getMinutes() + duration);
+
+    const endHour = String(startDate.getHours()).padStart(2, "0");
+    const endMinute = String(startDate.getMinutes()).padStart(2, "0");
+
+    infoBox.textContent = `Ende des Besuchs: ${endHour}:${endMinute} Uhr`;
   }
 });
