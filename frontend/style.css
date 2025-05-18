@@ -86,3 +86,24 @@ input[type="submit"]:hover {
 .fc .fc-timegrid-slot {
   touch-action: manipulation;
 }
+/* Mobile Optimierung für FullCalendar */
+@media (max-width: 600px) {
+  #calendar {
+    max-width: 100%;
+    overflow-x: auto;
+    font-size: 0.85rem;
+  }
+
+  .fc {
+    width: 100% !important;
+  }
+
+  .fc-timegrid-slot-label,
+  .fc-timegrid-axis {
+    font-size: 0.75rem;
+  }
+
+  .fc .fc-toolbar-title {
+    font-size: 1.1rem;
+  }
+}
