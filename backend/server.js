@@ -3,17 +3,19 @@ const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 const { sendConfirmationMail } = require("./mailer");
-// ...nachdem du die Buchung gespeichert hast:
-await sendConfirmationMail(email, token);
+
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../frontend")));
 
+// Pfad zur JSON-Datei mit Buchungen
 const BOOKINGS_FILE = path.join(__dirname, "../bookings.json");
 
+// Buchungen laden
 function loadBookings() {
   if (fs.existsSync(BOOKINGS_FILE)) {
     return JSON.parse(fs.readFileSync(BOOKINGS_FILE));
@@ -21,11 +23,12 @@ function loadBookings() {
   return [];
 }
 
+// Buchungen speichern
 function saveBookings(bookings) {
   fs.writeFileSync(BOOKINGS_FILE, JSON.stringify(bookings, null, 2));
 }
 
-// API: Buchungen für einen Tag abrufen
+// --- API: Buchungen für bestimmten Tag abrufen
 app.get("/api/bookings", (req, res) => {
   const { date } = req.query;
   const allBookings = loadBookings();
@@ -33,8 +36,8 @@ app.get("/api/bookings", (req, res) => {
   res.json(filtered);
 });
 
-// API: Neue Buchung speichern + Bestätigung versenden
-app.post("/api/book", (req, res) => {
+// --- API: Neue Buchung anlegen + Mail versenden
+app.post("/api/book", async (req, res) => {
   const { name, email, date, time, duration } = req.body;
   if (!name || !email || !date || !time || !duration) {
     return res.status(400).send("Fehlende Angaben");
@@ -53,13 +56,17 @@ app.post("/api/book", (req, res) => {
   bookings.push(newBooking);
   saveBookings(bookings);
 
-  sendConfirmationMail(email, name, date, start, end, token);
+  try {
+    await sendConfirmationMail(email, name, date, start, end, token);
+  } catch (err) {
+    console.error("❌ Fehler beim Mailversand:", err);
+  }
 
-  console.log("Neue Buchung:", newBooking);
+  console.log("✅ Neue Buchung:", newBooking);
   res.status(200).send("Buchung gespeichert");
 });
 
-// API: Buchung stornieren per Token
+// --- API: Buchung stornieren per Token
 app.get("/api/cancel", (req, res) => {
   const token = req.query.token;
   if (!token) return res.status(400).send("Kein Token übergeben.");
@@ -77,6 +84,7 @@ app.get("/api/cancel", (req, res) => {
   res.send("Deine Buchung wurde erfolgreich storniert.");
 });
 
+// --- Server starten
 app.listen(port, () => {
-  console.log(`Server läuft auf Port ${port}`);
+  console.log(`🚀 Server läuft auf Port ${port}`);
 });
