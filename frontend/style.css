@@ -91,3 +91,8 @@ input[type="submit"]:hover {
 .fc .fc-timegrid-slot {
   touch-action: manipulation;
 }
+height: "auto",
+contentHeight: "auto",
+expandRows: true,
+  }
+}
