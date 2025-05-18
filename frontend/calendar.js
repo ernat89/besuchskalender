@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     slotDuration: '00:30:00',
     allDaySlot: false,
     slotMinTime: "13:00:00",
-    slotMaxTime: "17:00:00",
+    slotMaxTime: "20:00:00",
     height: "auto",
     selectable: true,
     headerToolbar: {
