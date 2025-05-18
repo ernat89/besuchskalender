@@ -24,8 +24,10 @@ document.addEventListener("DOMContentLoaded", function () {
       showForm(info.dateStr);
     },
     slotClick: function (info) {
-      showForm(info.dateStr);
-    }
+  const clickedDate = info.date; // echtes Date-Objekt
+  const iso = clickedDate.toISOString(); // z. B. "2025-05-18T14:30:00.000Z"
+  showForm(iso);
+}
   });
 
   calendar.render();
