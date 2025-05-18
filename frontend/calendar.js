@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const calendarEl = document.getElementById("calendar");
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
-    plugins: [FullCalendar.TimeGrid, FullCalendar.Interaction],
     locale: "de",
     initialView: "timeGridDay",
     slotDuration: "00:30:00",
@@ -16,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
       center: "title",
       right: ""
     },
+    plugins: ['timeGrid', 'interaction'],
     events: fetchEvents,
     dateClick: function (info) {
       showForm(info.dateStr);
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
       start: `${b.date}T${b.start}`,
       end: `${b.date}T${b.end}`,
       backgroundColor: "#ff4d4d",
-      borderColor: "#cc0000",
+      borderColor: "#cc0000`,
       display: "block"
     }));
 
