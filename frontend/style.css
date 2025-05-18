@@ -11,98 +11,68 @@ h1, h2 {
 }
 
 #calendar {
-  position: relative;
+  max-width: 900px;
+  margin: 0 auto 30px auto;
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
   z-index: 0;
-  margin-bottom: 2rem;
 }
 
 #bookingFormWrapper {
+  max-width: 500px;
+  margin: 0 auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
   position: relative;
   z-index: 10;
-  max-width: 600px;
-  margin: 0 auto;
 }
 
-form {
-  background: white;
-  padding: 25px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-label {
+form label {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
   font-weight: bold;
-  color: #333;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="password"],
-select {
+form input,
+form select {
   width: 100%;
   padding: 10px;
-  margin-bottom: 18px;
+  margin-bottom: 15px;
+  border-radius: 5px;
   border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1em;
   box-sizing: border-box;
 }
 
-#endTimeInfo {
-  margin-top: -10px;
-  margin-bottom: 15px;
-  font-weight: bold;
-  color: #444;
-  text-align: left;
-}
-
 fieldset {
-  border: 1px solid #ddd;
-  padding: 15px;
-  border-radius: 6px;
-  margin-bottom: 20px;
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
   background: #f9f9f9;
 }
 
-fieldset legend {
-  font-weight: bold;
-  color: #444;
-  padding: 0 5px;
-}
-
-fieldset label {
-  font-weight: normal;
-  display: block;
-  margin-bottom: 10px;
-  cursor: pointer;
-}
-
-fieldset input[type="checkbox"] {
-  margin-right: 10px;
-  transform: scale(1.2);
-  vertical-align: middle;
-}
-
-input[type="submit"],
-button[type="submit"],
-button {
-  background: #0077cc;
+input[type="submit"] {
+  background-color: #0077cc;
   color: white;
+  font-size: 1em;
   border: none;
+  border-radius: 5px;
   padding: 12px;
-  font-size: 1.1em;
-  border-radius: 6px;
   cursor: pointer;
-  width: 100%;
-  transition: background 0.2s ease;
+  margin-top: 10px;
 }
 
-input[type="submit"]:hover,
-button[type="submit"]:hover,
-button:hover {
-  background: #005fa3;
+input[type="submit"]:hover {
+  background-color: #005fa3;
+}
+
+#endTimeInfo {
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #333;
 }
 
 #successMessage {
@@ -112,18 +82,6 @@ button:hover {
   text-align: center;
 }
 
-@media (max-width: 600px) {
-  form {
-    padding: 20px;
-    margin: 0 10px;
-  }
-
-  #bookingFormWrapper {
-    margin-top: 30px;
-  }
-}
-
-/* FullCalendar mobile click fix */
 .fc .fc-daygrid-day,
 .fc .fc-timegrid-slot {
   touch-action: manipulation;
