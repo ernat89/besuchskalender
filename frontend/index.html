@@ -8,24 +8,33 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Besuchskalender</h1>
-  <p>Hier siehst du, welche Zeiten schon belegt sind. Klicke auf einen freien Slot, um einen Besuch einzutragen.</p>
+  <div style="text-align:right; padding:10px;">
+    <label for="languageSwitcher">🌍 Sprache:</label>
+    <select id="languageSwitcher">
+      <option value="de" selected>Deutsch</option>
+      <option value="tr">Türkçe</option>
+      <option value="en">English</option>
+    </select>
+  </div>
+
+  <h1 data-i18n="title">Besuchskalender</h1>
+  <p data-i18n="intro">Hier siehst du, welche Zeiten schon belegt sind...</p>
 
   <div id="calendar"></div>
 
   <div id="bookingFormWrapper" style="display: none;">
-    <h2>Buchung eintragen</h2>
+    <h2 data-i18n="form.submit">Besuch eintragen</h2>
     <form id="bookingForm">
       <input type="hidden" id="selectedDate">
       <input type="hidden" id="selectedTime">
 
-      <label for="name">Vorname oder Initiale:</label>
+      <label for="name" data-i18n="form.nameLabel">Vorname oder Initiale:</label>
       <input type="text" id="name" name="name" required placeholder="z. B. Gisela oder G. M.">
 
-      <label for="email">E-Mail-Adresse:</label>
+      <label for="email" data-i18n="form.emailLabel">E-Mail-Adresse:</label>
       <input type="email" id="email" name="email" required>
 
-      <label for="duration">Dauer des Besuchs:</label>
+      <label for="duration" data-i18n="form.durationLabel">Dauer des Besuchs:</label>
       <select id="duration" name="duration" required>
         <option value="">-- Dauer wählen --</option>
         <option value="30">30 Minuten</option>
@@ -35,34 +44,30 @@
       </select>
 
       <fieldset>
-        <legend>Bitte bestätigen:</legend>
-        <label><input type="checkbox" required> Ich bin gesund und symptomfrei.</label>
-        <label><input type="checkbox" required> Ich bin mit der Speicherung meiner Daten zur Besuchskoordination einverstanden.</label>
-        <label><input type="checkbox" required> Ich akzeptiere den Erhalt einer Bestätigung per E-Mail.</label>
-        <label><input type="checkbox" required> Diese Seite wird ausschließlich privat genutzt.</label>
+        <legend data-i18n="form.confirm">Bitte bestätigen:</legend>
+        <label><input type="checkbox" required> <span data-i18n="form.check1">Ich bin gesund...</span></label>
+        <label><input type="checkbox" required> <span data-i18n="form.check2">Ich bin mit Speicherung...</span></label>
+        <label><input type="checkbox" required> <span data-i18n="form.check3">Ich akzeptiere E-Mail...</span></label>
+        <label><input type="checkbox" required> <span data-i18n="form.check4">Diese Seite...</span></label>
       </fieldset>
 
-      <input type="submit" value="Besuch eintragen">
+      <input type="submit" value="Besuch eintragen" data-i18n="form.submit">
     </form>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-  <script>
-    FullCalendar.globalLocales.push({
-      code: "de",
-      week: { dow: 1 },
-      buttonText: {
-        today: "Heute",
-        month: "Monat",
-        week: "Woche",
-        day: "Tag",
-        list: "Liste"
-      },
-      allDayText: "Ganztägig",
-      moreLinkText: "mehr",
-      noEventsText: "Keine Termine vorhanden"
-    });
-  </script>
   <script src="calendar.js"></script>
+  <script src="i18n.js"></script>
+  <script>
+    const switcher = document.getElementById("languageSwitcher");
+    switcher.addEventListener("change", () => {
+      localStorage.setItem("lang", switcher.value);
+      applyTranslations(switcher.value);
+    });
+
+    const lang = localStorage.getItem("lang") || "de";
+    switcher.value = lang;
+    applyTranslations(lang);
+  </script>
 </body>
 </html>
