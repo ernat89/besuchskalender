@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Übersicht</title>
+  <title data-i18n="admin.heading">Admin-Bereich</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -10,7 +10,12 @@
       background: #f3f3f3;
       padding: 20px;
     }
-    h1 {
+    #languageSwitcher {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    h1, h2 {
       text-align: center;
       color: #0077cc;
     }
@@ -57,17 +62,26 @@
   </style>
 </head>
 <body>
-  <h1>Admin-Bereich</h1>
+  <div style="text-align:right;">
+    <label for="languageSwitcher">🌍 Sprache:</label>
+    <select id="languageSwitcher">
+      <option value="de">Deutsch</option>
+      <option value="tr">Türkçe</option>
+      <option value="en">English</option>
+    </select>
+  </div>
+
+  <h1 data-i18n="admin.heading">Admin-Bereich</h1>
 
   <div id="authSection">
-    <p>Bitte Admin-Passwort eingeben:</p>
+    <p data-i18n="admin.loginText">Bitte Admin-Passwort eingeben:</p>
     <input type="password" id="adminPassword" placeholder="Passwort...">
-    <button onclick="checkPassword()">Einloggen</button>
+    <button onclick="checkPassword()" data-i18n="admin.button">Einloggen</button>
     <p id="authStatus" style="color:red;"></p>
   </div>
 
   <div id="adminContent" style="display: none;">
-    <h2>Alle Buchungen</h2>
+    <h2 data-i18n="admin.tableHeading">Alle Buchungen</h2>
     <table id="bookingTable">
       <thead>
         <tr>
@@ -83,8 +97,9 @@
     </table>
   </div>
 
+  <script src="i18n.js"></script>
   <script>
-    const ADMIN_PASSWORD = "ErNat1989!"; // ⛔ Dein persönliches Passwort
+    const ADMIN_PASSWORD = "ErNat1989!";
 
     function checkPassword() {
       const entered = document.getElementById("adminPassword").value;
@@ -93,7 +108,7 @@
         document.getElementById("adminContent").style.display = "block";
         loadBookings();
       } else {
-        document.getElementById("authStatus").textContent = "Falsches Passwort.";
+        document.getElementById("authStatus").textContent = translations[lang].admin.wrong;
       }
     }
 
@@ -104,7 +119,7 @@
       const tbody = document.querySelector("#bookingTable tbody");
 
       if (data.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='6'>Keine Buchungen gefunden.</td></tr>";
+        tbody.innerHTML = `<tr><td colspan="6">${translations[lang].admin.noBookings}</td></tr>`;
         return;
       }
 
@@ -122,6 +137,16 @@
         tbody.appendChild(row);
       });
     }
+
+    const switcher = document.getElementById("languageSwitcher");
+    switcher.addEventListener("change", () => {
+      localStorage.setItem("lang", switcher.value);
+      applyTranslations(switcher.value);
+    });
+
+    const lang = localStorage.getItem("lang") || "de";
+    switcher.value = lang;
+    applyTranslations(lang);
   </script>
 </body>
 </html>
