@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", function () {
       center: "title",
       right: ""
     },
-    plugins: ['timeGrid', 'interaction'],
     events: fetchEvents,
     dateClick: function (info) {
       showForm(info.dateStr);
@@ -34,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
       start: `${b.date}T${b.start}`,
       end: `${b.date}T${b.end}`,
       backgroundColor: "#ff4d4d",
-      borderColor: "#cc0000`,
+      borderColor: "#cc0000",
       display: "block"
     }));
 
