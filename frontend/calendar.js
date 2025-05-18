@@ -2,14 +2,17 @@ document.addEventListener("DOMContentLoaded", function () {
   const calendarEl = document.getElementById("calendar");
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
+    plugins: [FullCalendar.timeGridPlugin, FullCalendar.interactionPlugin],
     locale: "de",
     initialView: "timeGridDay",
     slotDuration: "00:30:00",
     slotMinTime: "13:00:00",
-    slotMaxTime: "20:00:00",
+    slotMaxTime: "20:30:00",
     nowIndicator: true,
     allDaySlot: false,
     selectable: true,
+    expandRows: true,
+    contentHeight: "auto",
     headerToolbar: {
       left: "prev,next today",
       center: "title",
@@ -23,6 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   calendar.render();
 
+  // --- Event-Daten vom Backend laden
   async function fetchEvents(info, successCallback, failureCallback) {
     const startDate = info.startStr.split("T")[0];
     const res = await fetch(`/api/bookings?date=${startDate}`);
@@ -40,9 +44,11 @@ document.addEventListener("DOMContentLoaded", function () {
     successCallback(events);
   }
 
+  // --- Formular anzeigen und Daten übernehmen
   function showForm(fullDateTime) {
     const [selectedDate, selectedTime] = fullDateTime.split("T");
     const time = selectedTime.substring(0, 5);
+
     document.getElementById("selectedDate").value = selectedDate;
     document.getElementById("selectedTime").value = time;
     document.getElementById("bookingFormWrapper").style.display = "block";
@@ -50,6 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("name").focus();
   }
 
+  // --- Formular absenden
   document.getElementById("bookingForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
@@ -83,6 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  // --- Endzeit automatisch anzeigen
   document.getElementById("duration").addEventListener("change", updateEndTime);
 
   function updateEndTime() {
@@ -104,30 +112,5 @@ document.addEventListener("DOMContentLoaded", function () {
     const endMinute = String(start.getMinutes()).padStart(2, "0");
 
     infoBox.textContent = `Ende des Besuchs: ${endHour}:${endMinute} Uhr`;
-  }
-});
-const calendar = new FullCalendar.Calendar(calendarEl, {
-  locale: "de",
-  initialView: "timeGridDay",
-  slotDuration: "00:30:00",
-  slotMinTime: "13:00:00",
-  slotMaxTime: "20:30:00", // erweitert das letzte sichtbare Zeitfenster
-  nowIndicator: true,
-  allDaySlot: false,
-  selectable: true,
-  expandRows: true,
-  contentHeight: "auto",
-  headerToolbar: {
-    left: "prev,next today",
-    center: "title",
-    right: ""
-  },
-  events: fetchEvents,
-  dateClick: function (info) {
-    const [date, time] = info.dateStr.split("T");
-    document.getElementById("selectedDate").value = date;
-    document.getElementById("selectedTime").value = time.substring(0, 5);
-    document.getElementById("bookingFormWrapper").style.display = "block";
-    updateEndTime();
   }
 });
