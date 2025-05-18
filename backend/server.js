@@ -24,15 +24,15 @@ function saveBookings(bookings) {
   fs.writeFileSync(BOOKINGS_FILE, JSON.stringify(bookings, null, 2));
 }
 
-// Neue API: Buchungen für einen Tag abrufen
+// 👉 API: Alle Buchungen an einem Tag abrufen
 app.get("/api/bookings", (req, res) => {
   const { date } = req.query;
-  const all = loadBookings();
-  const filtered = all.filter(b => b.date === date);
+  const allBookings = loadBookings();
+  const filtered = allBookings.filter(b => b.date === date);
   res.json(filtered);
 });
 
-// Neue Buchung eintragen
+// 👉 API: Neue Buchung speichern
 app.post("/api/book", (req, res) => {
   const { name, email, date, time, duration } = req.body;
   if (!name || !email || !date || !time || !duration) {
@@ -40,23 +40,28 @@ app.post("/api/book", (req, res) => {
   }
 
   const bookings = loadBookings();
-  const token = Date.now().toString(36) + Math.random().toString(36).substr(2);
-  const start = time;
 
+  // ⏱ Start und Endzeit berechnen
+  const start = time;
   const endTime = new Date(`1970-01-01T${start}:00Z`);
   endTime.setMinutes(endTime.getMinutes() + parseInt(duration));
   const end = endTime.toISOString().substr(11, 5);
 
-  bookings.push({ name, email, date, start, end, token });
+  const token = Date.now().toString(36) + Math.random().toString(36).substr(2);
+
+  const newBooking = { name, email, date, start, end, token };
+  bookings.push(newBooking);
   saveBookings(bookings);
 
+  // 📩 Bestätigung senden
   sendConfirmationMail(email, name, date, start, end);
 
-  console.log("Neue Buchung:", name, date, start, "-", end);
+  console.log("Neue Buchung:", newBooking);
   res.status(200).send("Buchung gespeichert");
 });
 
-// 🟢 Wichtig für Render: auf process.env.PORT hören
+// 👉 Optional: Stornolink (kommt gleich!)
+
 app.listen(port, () => {
   console.log(`Server läuft auf Port ${port}`);
 });
