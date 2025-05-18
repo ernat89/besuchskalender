@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const calendarEl = document.getElementById("calendar");
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
+    plugins: [FullCalendar.TimeGrid, FullCalendar.Interaction],
     locale: "de",
     initialView: "timeGridDay",
     slotDuration: "00:30:00",
@@ -9,10 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     slotMaxTime: "20:00:00",
     nowIndicator: true,
     allDaySlot: false,
-    selectable: false,
-    expandRows: true,
-    contentHeight: "auto",
-    slotEventOverlap: false,
+    selectable: true,
     headerToolbar: {
       left: "prev,next today",
       center: "title",
@@ -28,24 +26,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function fetchEvents(info, successCallback, failureCallback) {
     const startDate = info.startStr.split("T")[0];
-    try {
-      const res = await fetch(`/api/bookings?date=${startDate}`);
-      const bookings = await res.json();
+    const res = await fetch(`/api/bookings?date=${startDate}`);
+    const bookings = await res.json();
 
-      const events = bookings.map(b => ({
-        title: "Belegt",
-        start: `${b.date}T${b.start}`,
-        end: `${b.date}T${b.end}`,
-        backgroundColor: "#ff4d4d",
-        borderColor: "#cc0000",
-        display: "block"
-      }));
+    const events = bookings.map(b => ({
+      title: "Belegt",
+      start: `${b.date}T${b.start}`,
+      end: `${b.date}T${b.end}`,
+      backgroundColor: "#ff4d4d",
+      borderColor: "#cc0000",
+      display: "block"
+    }));
 
-      successCallback(events);
-    } catch (err) {
-      console.error("Fehler beim Laden der Termine:", err);
-      failureCallback(err);
-    }
+    successCallback(events);
   }
 
   function showForm(fullDateTime) {
@@ -55,6 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("selectedTime").value = time;
     document.getElementById("bookingFormWrapper").style.display = "block";
     updateEndTime();
+    document.getElementById("name").focus();
   }
 
   document.getElementById("bookingForm").addEventListener("submit", async function (e) {
