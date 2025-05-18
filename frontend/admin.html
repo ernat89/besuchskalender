@@ -14,17 +14,38 @@
       text-align: center;
       color: #0077cc;
     }
+    #authSection, #adminContent {
+      max-width: 700px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      margin-top: 10px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 15px;
+      font-size: 1em;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
-      background: #fff;
       margin-top: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     th, td {
-      padding: 12px;
+      padding: 10px;
       border: 1px solid #ccc;
-      text-align: left;
     }
     th {
       background: #0077cc;
@@ -36,22 +57,46 @@
   </style>
 </head>
 <body>
-  <h1>Alle Buchungen</h1>
-  <table id="bookingTable">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>E-Mail</th>
-        <th>Datum</th>
-        <th>Start</th>
-        <th>Ende</th>
-        <th>Token</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <h1>Admin-Bereich</h1>
+
+  <div id="authSection">
+    <p>Bitte Admin-Passwort eingeben:</p>
+    <input type="password" id="adminPassword" placeholder="Passwort...">
+    <button onclick="checkPassword()">Einloggen</button>
+    <p id="authStatus" style="color:red;"></p>
+  </div>
+
+  <div id="adminContent" style="display: none;">
+    <h2>Alle Buchungen</h2>
+    <table id="bookingTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>E-Mail</th>
+          <th>Datum</th>
+          <th>Start</th>
+          <th>Ende</th>
+          <th>Token</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
   <script>
+    const ADMIN_PASSWORD = "ErNat1989!"; // ⛔ Dein persönliches Passwort
+
+    function checkPassword() {
+      const entered = document.getElementById("adminPassword").value;
+      if (entered === ADMIN_PASSWORD) {
+        document.getElementById("authSection").style.display = "none";
+        document.getElementById("adminContent").style.display = "block";
+        loadBookings();
+      } else {
+        document.getElementById("authStatus").textContent = "Falsches Passwort.";
+      }
+    }
+
     async function loadBookings() {
       const today = new Date().toISOString().split("T")[0];
       const res = await fetch("/api/bookings?date=" + today);
@@ -77,8 +122,6 @@
         tbody.appendChild(row);
       });
     }
-
-    loadBookings();
   </script>
 </body>
 </html>
