@@ -8,75 +8,31 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-async function sendConfirmationMail(email, name, date, start, end, token) {
-  const cancelUrl = `https://besuchskalender.onrender.com/api/cancel?token=${token}`;
+async function sendConfirmationMail(email,name,date,start,end,token){
+  const cancelUrl = `https://${process.env.RENDER_EXTERNAL_URL}/api/cancel?token=${token}`;
 
-  const userMail = {
+  // Nutzer-Mail
+  await transporter.sendMail({
     from: `"Besuchskalender" <${process.env.GMAIL_USER}>`,
     to: email,
     subject: "Deine Besuchsbuchung",
-    html: `
-      <p>Hallo ${name},</p>
-      <p>Deine Buchung am <strong>${date}</strong> von <strong>${start}</strong> bis <strong>${const nodemailer = require("nodemailer");
-
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS
-  }
-});
-
-async function sendConfirmationMail(email, name, date, start, end, token) {
-  const cancelUrl = `https://<DEINE-DOMAIN>/api/cancel?token=${token}`;
-
-  // Mail an Nutzer
-  await transporter.sendMail({
-    from: `"Besuchskalender" <${process.env.GMAIL_USER}>`,
-    to:   email,
-    subject: "Deine Besuchsbuchung",
-    html: `
-      <p>Hallo ${name},</p>
-      <p>Dein Besuch am <strong>${date}</strong> von <strong>${start}</strong> bis <strong>${end}</strong> ist nun eingetragen.</p>
-      <p><a href="${cancelUrl}">Hier stornieren</a></p>
-    `
+    html: `<p>Hallo ${name},<br>
+      Dein Besuch am <strong>${date}</strong> von <strong>${start}</strong> bis <strong>${end}</strong> ist gebucht.<br>
+      <a href="${cancelUrl}">Hier stornieren</a>
+    </p>`
   });
 
-  // Mail an Admin
+  // Admin-Mail
   await transporter.sendMail({
-    from: `"Besuchskalender" <${process.env.GMAIL_USER}>`,
-    to:   "eren.aykanat@web.de",
-    subject: `Neue Buchung von ${name}`,
-    html: `
-      <p><strong>Vorname:</strong> ${name}</p>
-      <p><strong>E-Mail:</strong> ${email}</p>
-      <p><strong>Datum:</strong> ${date}</p>
-      <p><strong>Zeit:</strong> ${start} – ${end}</p>
-    `
-  });
-}
-
-module.exports = { sendConfirmationMail };
-end}</strong> wurde gespeichert.</p>
-      <p><a href="${cancelUrl}">Hier kannst du sie ggf. stornieren</a>.</p>
-      <p>Viele Grüße,<br>Besuchskalender</p>
-    `
-  };
-
-  const adminMail = {
     from: `"Besuchskalender" <${process.env.GMAIL_USER}>`,
     to: "eren.aykanat@web.de",
-    subject: `Neue Buchung von ${name}`,
-    html: `
-      <p><strong>Vorname:</strong> ${name}</p>
-      <p><strong>E-Mail:</strong> ${email}</p>
-      <p><strong>Datum:</strong> ${date}</p>
-      <p><strong>Uhrzeit:</strong> ${start} – ${end}</p>
-    `
-  };
-
-  await transporter.sendMail(userMail);
-  await transporter.sendMail(adminMail);
+    subject: `Neue Buchung: ${name}`,
+    html: `<p><b>Vorname:</b> ${name}<br>
+      <b>E-Mail:</b> ${email}<br>
+      <b>Datum:</b> ${date}<br>
+      <b>Zeit:</b> ${start}–${end}
+    </p>`
+  });
 }
 
 module.exports = { sendConfirmationMail };
