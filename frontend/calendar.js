@@ -1,16 +1,17 @@
 document.addEventListener("DOMContentLoaded", function () {
   const calendarEl = document.getElementById("calendar");
+
   const calendar = new FullCalendar.Calendar(calendarEl, {
     locale: "de",
     initialView: "timeGridDay",
-    slotMinTime: "13:00:00",
-    slotMaxTime: "20:30:00",
     slotDuration: "00:30:00",
-    allDaySlot: false,
+    slotMinTime: "12:00:00",
+    slotMaxTime: "20:00:00",
     nowIndicator: true,
+    allDaySlot: false,
     selectable: true,
-    contentHeight: "auto",
     expandRows: true,
+    contentHeight: "auto",
     headerToolbar: {
       left: "prev,next today",
       center: "title",
@@ -22,44 +23,33 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("selectedDate").value = date;
       document.getElementById("selectedTime").value = time.substring(0, 5);
       document.getElementById("bookingFormWrapper").style.display = "block";
-      updateStartAndEndTime();
+      updateEndTime();
+      document.getElementById("name").focus();
     }
   });
+
   calendar.render();
 
   async function fetchEvents(info, successCallback, failureCallback) {
     const startDate = info.startStr.split("T")[0];
     const res = await fetch(`/api/bookings?date=${startDate}`);
     const bookings = await res.json();
+
     const events = bookings.map(b => ({
-      title: b.name,
+      title: `Belegt (${b.name})`,
       start: `${b.date}T${b.start}`,
       end: `${b.date}T${b.end}`,
       backgroundColor: "#ff4d4d",
-      borderColor: "#cc0000"
+      borderColor: "#cc0000",
+      display: "block"
     }));
+
     successCallback(events);
-  }
-
-  document.getElementById("duration").addEventListener("change", updateStartAndEndTime);
-
-  function updateStartAndEndTime() {
-    const start = document.getElementById("selectedTime").value;
-    const duration = parseInt(document.getElementById("duration").value, 10);
-    const [hour, minute] = start.split(":").map(Number);
-    const startDate = new Date();
-    startDate.setHours(hour, minute);
-
-    const endDate = new Date(startDate.getTime() + duration * 60000);
-
-    const formatTime = date => date.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
-
-    document.getElementById("startTimeInfo").textContent = "Start: " + formatTime(startDate);
-    document.getElementById("endTimeInfo").textContent = "Ende: " + formatTime(endDate);
   }
 
   document.getElementById("bookingForm").addEventListener("submit", async function (e) {
     e.preventDefault();
+
     const name = document.getElementById("name").value;
     const email = document.getElementById("email").value;
     const date = document.getElementById("selectedDate").value;
@@ -68,18 +58,48 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const payload = { name, email, date, time, duration };
 
-    const res = await fetch("/api/book", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
+    try {
+      const res = await fetch("/api/book", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
 
-    if (res.ok) {
-      document.getElementById("successMessage").textContent = "✅ Buchung erfolgreich!";
-      document.getElementById("bookingForm").reset();
-      setTimeout(() => location.reload(), 3000);
-    } else {
-      alert("Fehler bei der Buchung.");
+      if (res.ok) {
+        document.getElementById("bookingForm").reset();
+        document.getElementById("bookingFormWrapper").style.display = "none";
+        document.getElementById("successMessage").textContent = "✅ Buchung erfolgreich!";
+        document.getElementById("successMessage").style.display = "block";
+        setTimeout(() => location.reload(), 3000);
+      } else {
+        alert("Fehler bei der Buchung.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Serverfehler.");
     }
   });
+
+  document.getElementById("duration").addEventListener("change", updateEndTime);
+
+  function updateEndTime() {
+    const timeStr = document.getElementById("selectedTime").value;
+    const duration = parseInt(document.getElementById("duration").value, 10);
+    const infoBox = document.getElementById("endTimeInfo");
+
+    if (!timeStr || isNaN(duration)) {
+      infoBox.textContent = "";
+      return;
+    }
+
+    const [hour, minute] = timeStr.split(":").map(Number);
+    const start = new Date();
+    start.setHours(hour);
+    start.setMinutes(minute + duration);
+
+    const endHour = String(start.getHours()).padStart(2, "0");
+    const endMinute = String(start.getMinutes()).padStart(2, "0");
+
+    infoBox.textContent = `Ende des Besuchs: ${endHour}:${endMinute} Uhr`;
+  }
 });
