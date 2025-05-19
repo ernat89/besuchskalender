@@ -1,48 +1,37 @@
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
 
-// Transporter-Konfiguration für Gmail
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.GMAIL_USER,  // z. B. besuch.aykanat@gmail.com
-    pass: process.env.GMAIL_PASS   // dein App-Passwort / OAuth-Token
+    pass: process.env.GMAIL_PASS   // dein App-Passwort
   }
 });
 
 /**
- * sendConfirmationMail verschickt einerseits die Bestätigung
- * an den Gast und sendet danach eine Info-Mail an den Admin.
- *
- * @param {string} email – Adresse des Buchers
- * @param {string} name  – Vorname oder Initiale des Buchers
- * @param {string} date  – Datum im ISO-Format (YYYY-MM-TT)
- * @param {string} start – Start-Uhrzeit (HH:MM)
- * @param {string} end   – Ende-Uhrzeit (HH:MM)
- * @param {string} token – Stornierungs-Token
+ * Sendet eine Bestätigung an den Gast
+ * und eine Info-Mail an den Admin.
  */
-async function sendConfirmationMail(email, name, date, start, end, token) {
-  // Link zum Stornieren
+export async function sendConfirmationMail(email, name, date, start, end, token) {
   const cancelUrl = `https://besuchskalender.onrender.com/api/cancel?token=${token}`;
 
-  // 1) Mail an den/ die Bucher*in
-  const userMail = {
+  // 1) Mail an Besucher
+  await transporter.sendMail({
     from: `"Besuchskalender" <${process.env.GMAIL_USER}>`,
     to: email,
     subject: "Deine Besuchsbuchung",
     html: `
       <p>Hallo ${name},</p>
-      <p>deine Buchung am <strong>${date}</strong> von <strong>${start}</strong> bis <strong>${end}</strong> wurde erfolgreich gespeichert.</p>
-      <p>Wenn du stornieren möchtest, klicke bitte hier:<br>
-      <a href="${cancelUrl}">Termin stornieren</a></p>
+      <p>deine Buchung am <strong>${date}</strong> von <strong>${start}</strong> bis <strong>${end}</strong> wurde gespeichert.</p>
+      <p><a href="${cancelUrl}">Termin stornieren</a></p>
       <p>Liebe Grüße<br>Dein Besuchskalender</p>
     `
-  };
-  await transporter.sendMail(userMail);
+  });
 
-  // 2) Info-Mail an den Admin
-  const adminMail = {
+  // 2) Info-Mail an Admin
+  await transporter.sendMail({
     from: `"Besuchskalender" <${process.env.GMAIL_USER}>`,
-    to: "eren.aykanat@web.de",  // deine feste Admin-Adresse
+    to: "eren.aykanat@web.de",
     subject: `Neue Buchung von ${name} (${email})`,
     html: `
       <p>Hallo Admin,</p>
@@ -53,12 +42,8 @@ async function sendConfirmationMail(email, name, date, start, end, token) {
         <li><strong>Datum:</strong> ${date}</li>
         <li><strong>Uhrzeit:</strong> ${start} – ${end}</li>
       </ul>
-      <p>Zum Stornieren hier klicken:<br>
-      <a href="${cancelUrl}">Termin stornieren</a></p>
+      <p><a href="${cancelUrl}">Termin stornieren</a></p>
       <p>Viele Grüße<br>Dein Besuchskalender</p>
     `
-  };
-  await transporter.sendMail(adminMail);
+  });
 }
-
-module.exports = { sendConfirmationMail };
