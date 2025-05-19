@@ -1,17 +1,17 @@
 const express = require("express");
-const cors = require("cors");
-const fs = require("fs");
-const path = require("path");
+const cors    = require("cors");
+const fs      = require("fs");
+const path    = require("path");
 const { sendConfirmationMail } = require("./mailer");
 
-const app = express();
+const app  = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../frontend")));
 
-const BOOKINGS_FILE = path.join(__dirname, "bookings.json"); // ← hier korrigiert
+const BOOKINGS_FILE = path.join(__dirname, "bookings.json");
 
 function loadBookings() {
   if (fs.existsSync(BOOKINGS_FILE)) {
@@ -19,64 +19,57 @@ function loadBookings() {
   }
   return [];
 }
-
-function saveBookings(bookings) {
-  fs.writeFileSync(BOOKINGS_FILE, JSON.stringify(bookings, null, 2));
+function saveBookings(b) {
+  fs.writeFileSync(BOOKINGS_FILE, JSON.stringify(b, null, 2));
 }
 
+// GET Buchungen für ein Datum
 app.get("/api/bookings", (req, res) => {
-  const { date } = req.query;
-  const allBookings = loadBookings();
-  const filtered = allBookings.filter(b => b.date === date);
-  res.json(filtered);
+  const date = req.query.date;
+  const all  = loadBookings();
+  res.json(all.filter(b => b.date === date));
 });
 
+// POST neue Buchung
 app.post("/api/book", async (req, res) => {
   const { name, email, date, time, duration } = req.body;
-  if (!name || !email || !date || !time || !duration) {
+  if (!name||!email||!date||!time||!duration) {
     return res.status(400).send("Fehlende Angaben");
   }
 
   const bookings = loadBookings();
-
   const start = time;
-  const endTime = new Date(`1970-01-01T${start}:00Z`);
-  endTime.setMinutes(endTime.getMinutes() + parseInt(duration));
-  const end = endTime.toISOString().substr(11, 5);
+  const endDT = new Date(`1970-01-01T${start}:00Z`);
+  endDT.setMinutes(endDT.getMinutes() + parseInt(duration, 10));
+  const end = endDT.toISOString().substr(11, 5);
 
   const token = Date.now().toString(36) + Math.random().toString(36).substr(2);
-  const newBooking = { name, email, date, start, end, token };
+  const entry = { name, email, date, start, end, token };
 
-  bookings.push(newBooking);
+  bookings.push(entry);
   saveBookings(bookings);
 
   try {
     await sendConfirmationMail(email, name, date, start, end, token);
   } catch (err) {
-    console.error("❌ Fehler beim Mailversand:", err);
+    console.error("Mail-Fehler:", err);
   }
 
-  console.log("✅ Neue Buchung:", newBooking);
-  res.status(200).send("Buchung gespeichert");
+  res.status(200).send("ok");
 });
 
+// GET Stornierung
 app.get("/api/cancel", (req, res) => {
   const token = req.query.token;
-  if (!token) return res.status(400).send("Kein Token übergeben.");
+  if (!token) return res.status(400).send("kein Token");
 
-  let bookings = loadBookings();
-  const initialLength = bookings.length;
+  let b = loadBookings();
+  const len0 = b.length;
+  b = b.filter(x => x.token !== token);
+  saveBookings(b);
 
-  bookings = bookings.filter(b => b.token !== token);
-  saveBookings(bookings);
-
-  if (bookings.length === initialLength) {
-    return res.status(404).send("Keine passende Buchung gefunden.");
-  }
-
-  res.send("Deine Buchung wurde erfolgreich storniert.");
+  if (b.length === len0) return res.status(404).send("nicht gefunden");
+  res.send("Storno erfolgreich");
 });
 
-app.listen(port, () => {
-  console.log(`🚀 Server läuft auf Port ${port}`);
-});
+app.listen(port, ()=> console.log(`🚀 läuft auf ${port}`));
