@@ -4,249 +4,153 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Besuchskalender</title>
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" />
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f5f8fc;
+      background: #f4f7fa;
       margin: 0;
       padding: 0;
-      text-align: center;
     }
 
     h1 {
-      color: #2a73cc;
-      margin: 1rem 0;
+      text-align: center;
+      color: #2a70d4;
+      margin-top: 20px;
     }
 
-    #languageSwitch {
-      margin-bottom: 1rem;
+    .language-buttons {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .language-buttons button {
+      margin: 0 5px;
+      padding: 5px 10px;
+      font-size: 14px;
+      cursor: pointer;
     }
 
     #calendar {
       max-width: 900px;
-      margin: 0 auto 2rem;
-      background: #fff;
-      border-radius: 8px;
-      padding: 1rem;
+      margin: 0 auto 30px;
+      background-color: #fff;
+      border-radius: 6px;
+      padding: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
     #bookingFormWrapper {
       max-width: 500px;
-      margin: 2rem auto;
-      background: #fff;
+      margin: 20px auto;
+      background: white;
       border-radius: 8px;
-      padding: 1.5rem;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
     }
 
-    label, select, input, button {
+    label {
+      font-weight: bold;
       display: block;
+      margin-top: 10px;
+    }
+
+    input, select {
       width: 100%;
-      margin: 0.5rem 0;
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
     }
 
-    .checkbox-wrapper {
-      text-align: left;
-      font-size: 0.9rem;
-      margin: 0.5rem 0;
+    .checkbox-group {
+      margin-top: 15px;
     }
 
-    .checkbox-wrapper input {
-      margin-right: 0.5rem;
+    .checkbox-group label {
+      font-weight: normal;
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
     }
 
-    .language-button {
-      margin: 0 0.3rem;
+    .checkbox-group input[type="checkbox"] {
+      margin-right: 10px;
+    }
+
+    #startTimeInfo, #endTimeInfo {
+      margin-top: 5px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    button[type="submit"] {
+      background: #2a70d4;
+      color: white;
+      border: none;
+      padding: 10px;
+      margin-top: 10px;
+      width: 100%;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+      background: #205bb5;
+    }
+
+    #successMessage {
+      text-align: center;
+      color: green;
+      margin-top: 10px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h1 id="header-title">Besuchskalender</h1>
+  <h1 data-i18n="title">Besuchskalender</h1>
 
-  <div id="languageSwitch">
-    <button class="language-button" onclick="setLanguage('de')">Deutsch</button>
-    <button class="language-button" onclick="setLanguage('en')">English</button>
-    <button class="language-button" onclick="setLanguage('tr')">Türkçe</button>
+  <div class="language-buttons">
+    <button onclick="setLanguage('de')">Deutsch</button>
+    <button onclick="setLanguage('en')">English</button>
+    <button onclick="setLanguage('tr')">Türkçe</button>
   </div>
 
   <div id="calendar"></div>
 
-  <div id="bookingFormWrapper">
-    <h3 id="form-title">Besuch eintragen</h3>
+  <div id="bookingFormWrapper" style="display:none;">
     <form id="bookingForm">
-      <label for="name" id="label-name">Vorname:</label>
+      <label for="name" data-i18n="label_name">Vorname:</label>
       <input type="text" id="name" required />
 
-      <label for="email" id="label-email">E-Mail:</label>
+      <label for="email" data-i18n="label_email">E-Mail:</label>
       <input type="email" id="email" required />
 
-      <label for="duration" id="label-duration">Dauer:</label>
+      <label for="duration" data-i18n="label_duration">Dauer:</label>
       <select id="duration" required>
         <option value="30">30 Minuten</option>
         <option value="60" selected>1 Stunde</option>
         <option value="90">1,5 Stunden</option>
       </select>
 
-      <div id="startTimeInfo">Start: </div>
-      <div id="endTimeInfo">Ende: </div>
+      <div id="startTimeInfo"></div>
+      <div id="endTimeInfo"></div>
 
-      <div class="checkbox-wrapper">
-        <input type="checkbox" id="health" required />
-        <label for="health" id="label-health">Ich bin gesund.</label>
-      </div>
-
-      <div class="checkbox-wrapper">
-        <input type="checkbox" id="privacy" required />
-        <label for="privacy" id="label-privacy">Ich bin mit der Datenverarbeitung zur Besuchsplanung einverstanden.</label>
-      </div>
-
-      <div class="checkbox-wrapper">
-        <input type="checkbox" id="emailConfirm" required />
-        <label for="emailConfirm" id="label-emailConfirm">Ich akzeptiere die Bestätigung per E-Mail.</label>
+      <div class="checkbox-group">
+        <label><input type="checkbox" id="health" required /> <span data-i18n="checkbox_health">Ich bin gesund.</span></label>
+        <label><input type="checkbox" id="privacy" required /> <span data-i18n="checkbox_privacy">Ich bin mit der Datenverarbeitung zur Besuchsplanung einverstanden.</span></label>
+        <label><input type="checkbox" id="emailAgree" required /> <span data-i18n="checkbox_email">Ich akzeptiere die Bestätigung per E-Mail.</span></label>
       </div>
 
       <input type="hidden" id="selectedDate" />
       <input type="hidden" id="selectedTime" />
-      <button type="submit" id="submit-btn">Eintragen</button>
+      <button type="submit" data-i18n="submit">Eintragen</button>
     </form>
     <div id="successMessage"></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
-  <script>
-    let currentLang = 'de';
-
-    const translations = {
-      de: {
-        title: "Besuchskalender",
-        form: "Besuch eintragen",
-        name: "Vorname:",
-        email: "E-Mail:",
-        duration: "Dauer:",
-        health: "Ich bin gesund.",
-        privacy: "Ich bin mit der Datenverarbeitung zur Besuchsplanung einverstanden.",
-        emailConfirm: "Ich akzeptiere die Bestätigung per E-Mail.",
-        submit: "Eintragen",
-        start: "Start",
-        end: "Ende"
-      },
-      en: {
-        title: "Visit Calendar",
-        form: "Book a Visit",
-        name: "First Name:",
-        email: "Email:",
-        duration: "Duration:",
-        health: "I am healthy.",
-        privacy: "I agree to data processing for visit planning.",
-        emailConfirm: "I accept confirmation via email.",
-        submit: "Submit",
-        start: "Start",
-        end: "End"
-      },
-      tr: {
-        title: "Ziyaret Takvimi",
-        form: "Ziyaret Kaydı",
-        name: "İsim:",
-        email: "E-Posta:",
-        duration: "Süre:",
-        health: "Sağlıklıyım.",
-        privacy: "Ziyaret planlaması için veri işlemeye izin veriyorum.",
-        emailConfirm: "E-posta ile onayı kabul ediyorum.",
-        submit: "Kaydet",
-        start: "Başlangıç",
-        end: "Bitiş"
-      }
-    };
-
-    function setLanguage(lang) {
-      currentLang = lang;
-      const t = translations[lang];
-      document.getElementById("header-title").innerText = t.title;
-      document.getElementById("form-title").innerText = t.form;
-      document.getElementById("label-name").innerText = t.name;
-      document.getElementById("label-email").innerText = t.email;
-      document.getElementById("label-duration").innerText = t.duration;
-      document.getElementById("label-health").innerText = t.health;
-      document.getElementById("label-privacy").innerText = t.privacy;
-      document.getElementById("label-emailConfirm").innerText = t.emailConfirm;
-      document.getElementById("submit-btn").innerText = t.submit;
-      updateStartEndLabels();
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-      const calendarEl = document.getElementById("calendar");
-      const calendar = new FullCalendar.Calendar(calendarEl, {
-        locale: "de",
-        initialView: "timeGridDay",
-        slotMinTime: "12:00:00",
-        slotMaxTime: "20:30:00",
-        slotDuration: "00:30:00",
-        selectable: true,
-        headerToolbar: {
-          left: "prev,next today",
-          center: "title",
-          right: ""
-        },
-        events: "/api/bookings",
-        dateClick: function (info) {
-          const time = info.dateStr.substring(11, 16);
-          document.getElementById("selectedDate").value = info.dateStr.substring(0, 10);
-          document.getElementById("selectedTime").value = time;
-          document.getElementById("bookingFormWrapper").style.display = "block";
-          updateStartEndLabels();
-        }
-      });
-      calendar.render();
-
-      document.getElementById("duration").addEventListener("change", updateStartEndLabels);
-    });
-
-    function updateStartEndLabels() {
-      const start = document.getElementById("selectedTime").value;
-      const duration = parseInt(document.getElementById("duration").value);
-      const endTime = new Date(`2000-01-01T${start}:00`);
-      endTime.setMinutes(endTime.getMinutes() + duration);
-
-      const t = translations[currentLang];
-      document.getElementById("startTimeInfo").innerText = `${t.start}: ${start} Uhr`;
-      document.getElementById("endTimeInfo").innerText = `${t.end}: ${endTime.toTimeString().substring(0, 5)} Uhr`;
-    }
-
-    document.getElementById("bookingForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const date = document.getElementById("selectedDate").value;
-      const time = document.getElementById("selectedTime").value;
-      const duration = document.getElementById("duration").value;
-
-      const health = document.getElementById("health").checked;
-      const privacy = document.getElementById("privacy").checked;
-      const emailConfirm = document.getElementById("emailConfirm").checked;
-
-      if (!health || !privacy || !emailConfirm) {
-        alert("Bitte alle Checkboxen bestätigen.");
-        return;
-      }
-
-      const res = await fetch("/api/book", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, date, time, duration })
-      });
-
-      if (res.ok) {
-        document.getElementById("successMessage").innerText = "✅ Buchung gespeichert!";
-        document.getElementById("bookingForm").reset();
-      } else {
-        document.getElementById("successMessage").innerText = "❌ Fehler bei der Buchung.";
-      }
-    });
-
-    // Initial
-    setLanguage("de");
-  </script>
+  <script src="i18n.js"></script>
+  <script src="calendar.js"></script>
+  <script src="index.js"></script>
 </body>
 </html>
