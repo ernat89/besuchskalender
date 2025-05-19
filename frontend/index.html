@@ -2,67 +2,146 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Besuchskalender</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <title>Besuchskalender</title>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f7fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      text-align: center;
+      color: #007bff;
+      padding-top: 1rem;
+    }
+
+    #calendar {
+      max-width: 900px;
+      margin: 2rem auto;
+      background-color: #fff9e6;
+      border-radius: 6px;
+      padding: 1rem;
+    }
+
+    #bookingFormWrapper {
+      max-width: 400px;
+      margin: 1rem auto;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 4px;
+      box-sizing: border-box;
+    }
+
+    #checkboxes {
+      margin-top: 1rem;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      margin-left: auto;
+    }
+
+    #submitBtn {
+      width: 100%;
+      margin-top: 1rem;
+      padding: 0.6rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    #successMessage {
+      text-align: center;
+      color: green;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+
+    #languageSwitcher {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    #startTimeInfo, #endTimeInfo {
+      font-size: 0.9rem;
+      margin-top: 0.2rem;
+    }
+  </style>
 </head>
 <body>
-
-  <div class="lang-selector">
-    <label for="language">Sprache / Language / Dil:</label>
-    <select id="language">
-      <option value="de" selected>Deutsch</option>
-      <option value="en">English</option>
-      <option value="tr">Türkçe</option>
-    </select>
-  </div>
-
-  <h1 data-i18n="title">Besuchskalender</h1>
+  <h1 id="calendarTitle">Besuchskalender</h1>
   <div id="calendar"></div>
 
   <div id="bookingFormWrapper" style="display: none;">
-    <h2 data-i18n="formTitle">Besuch eintragen</h2>
     <form id="bookingForm">
-      <label for="name" data-i18n="labelName">Vorname oder Initiale:</label>
-      <input type="text" id="name" name="name" required />
+      <label for="name" data-i18n="label.name">Vorname:</label>
+      <input type="text" id="name" required />
 
-      <label for="email" data-i18n="labelEmail">E-Mail-Adresse:</label>
-      <input type="email" id="email" name="email" required />
+      <label for="email" data-i18n="label.email">E-Mail:</label>
+      <input type="email" id="email" required />
 
-      <input type="hidden" id="selectedDate" name="date" />
-      <input type="hidden" id="selectedTime" name="time" />
-
-      <label for="duration" data-i18n="labelDuration">Dauer des Besuchs:</label>
-      <select id="duration" name="duration" required>
-        <option value="">-- Dauer wählen --</option>
+      <label for="duration" data-i18n="label.duration">Dauer:</label>
+      <select id="duration" required>
         <option value="30">30 Minuten</option>
-        <option value="60">1 Stunde</option>
+        <option value="60" selected>1 Stunde</option>
         <option value="90">1,5 Stunden</option>
-        <option value="120">2 Stunden</option>
-        <option value="150">2,5 Stunden</option>
-        <option value="180">3 Stunden</option>
       </select>
 
-      <div id="timeInfo"></div>
+      <div id="startTimeInfo"></div>
+      <div id="endTimeInfo"></div>
 
-      <fieldset>
-        <legend data-i18n="consentLegend">Bitte bestätigen:</legend>
-        <label><input type="checkbox" required /> <span data-i18n="checkboxHealth">Ich bin gesund und symptomfrei.</span></label>
-        <label><input type="checkbox" required /> <span data-i18n="checkboxData">Ich bin mit der Speicherung meiner Daten einverstanden.</span></label>
-        <label><input type="checkbox" required /> <span data-i18n="checkboxEmail">Ich akzeptiere den E-Mail-Versand zur Bestätigung.</span></label>
-      </fieldset>
+      <div id="checkboxes">
+        <div class="checkbox-row">
+          <label for="health" data-i18n="checkbox.health">Ich bin gesund.</label>
+          <input type="checkbox" id="health" required>
+        </div>
+        <div class="checkbox-row">
+          <label for="consent" data-i18n="checkbox.privacy">Ich bin mit der Datenverarbeitung zur Besuchsplanung einverstanden.</label>
+          <input type="checkbox" id="consent" required>
+        </div>
+        <div class="checkbox-row">
+          <label for="emailConfirm" data-i18n="checkbox.emailConfirm">Ich akzeptiere die Bestätigung per E-Mail.</label>
+          <input type="checkbox" id="emailConfirm" required>
+        </div>
+      </div>
 
-      <div id="successMessage" style="display: none;"></div>
-      <input type="submit" value="Besuch eintragen" data-i18n-value="submit" />
+      <input type="submit" value="Eintragen" id="submitBtn" />
     </form>
+
+    <div id="successMessage"></div>
   </div>
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.min.js"></script>
-  <script src="calendar.js"></script>
-  <script src="translate.js"></script>
+  <div id="languageSwitcher">
+    <button onclick="setLanguage('de')">Deutsch</button>
+    <button onclick="setLanguage('en')">English</button>
+    <button onclick="setLanguage('tr')">Türkçe</button>
+  </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+  <script src="calendar.js"></script>
+  <script src="i18n.js"></script>
 </body>
 </html>
