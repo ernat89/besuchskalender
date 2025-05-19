@@ -19,18 +19,6 @@
       margin-top: 20px;
     }
 
-    .language-buttons {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    .language-buttons button {
-      margin: 0 5px;
-      padding: 5px 10px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
     #calendar {
       max-width: 900px;
       margin: 0 auto 30px;
@@ -67,14 +55,15 @@
     }
 
     .checkbox-group label {
-      font-weight: normal;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
+      gap: 10px;
       margin-bottom: 10px;
+      font-weight: normal;
     }
 
     .checkbox-group input[type="checkbox"] {
-      margin-right: 10px;
+      margin-top: 3px;
     }
 
     #startTimeInfo, #endTimeInfo {
@@ -107,25 +96,19 @@
   </style>
 </head>
 <body>
-  <h1 data-i18n="title">Besuchskalender</h1>
-
-  <div class="language-buttons">
-    <button onclick="setLanguage('de')">Deutsch</button>
-    <button onclick="setLanguage('en')">English</button>
-    <button onclick="setLanguage('tr')">Türkçe</button>
-  </div>
+  <h1>Besuchskalender</h1>
 
   <div id="calendar"></div>
 
   <div id="bookingFormWrapper" style="display:none;">
     <form id="bookingForm">
-      <label for="name" data-i18n="label_name">Vorname:</label>
+      <label for="name">Vorname:</label>
       <input type="text" id="name" required />
 
-      <label for="email" data-i18n="label_email">E-Mail:</label>
+      <label for="email">E-Mail:</label>
       <input type="email" id="email" required />
 
-      <label for="duration" data-i18n="label_duration">Dauer:</label>
+      <label for="duration">Dauer:</label>
       <select id="duration" required>
         <option value="30">30 Minuten</option>
         <option value="60" selected>1 Stunde</option>
@@ -136,20 +119,19 @@
       <div id="endTimeInfo"></div>
 
       <div class="checkbox-group">
-        <label><input type="checkbox" id="health" required /> <span data-i18n="checkbox_health">Ich bin gesund.</span></label>
-        <label><input type="checkbox" id="privacy" required /> <span data-i18n="checkbox_privacy">Ich bin mit der Datenverarbeitung zur Besuchsplanung einverstanden.</span></label>
-        <label><input type="checkbox" id="emailAgree" required /> <span data-i18n="checkbox_email">Ich akzeptiere die Bestätigung per E-Mail.</span></label>
+        <label><input type="checkbox" id="health" required /> Ich bin gesund.</label>
+        <label><input type="checkbox" id="privacy" required /> Ich bin mit der Datenverarbeitung zur Besuchsplanung einverstanden.</label>
+        <label><input type="checkbox" id="emailAgree" required /> Ich akzeptiere die Bestätigung per E-Mail.</label>
       </div>
 
       <input type="hidden" id="selectedDate" />
       <input type="hidden" id="selectedTime" />
-      <button type="submit" data-i18n="submit">Eintragen</button>
+      <button type="submit">Eintragen</button>
     </form>
     <div id="successMessage"></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
-  <script src="i18n.js"></script>
   <script src="calendar.js"></script>
   <script src="index.js"></script>
 </body>
