@@ -2,49 +2,45 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Besuchskalender</title>
-
-  <!-- FullCalendar Styles + Script -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
-
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f4f7fa;
+      background-color: #f5f7fa;
       margin: 0;
-      padding: 20px;
-      text-align: center;
+      padding: 0;
     }
 
     h1 {
+      text-align: center;
+      padding: 20px;
       color: #2a77d4;
     }
 
     #calendar {
       max-width: 900px;
-      margin: 0 auto 30px;
-      background: #fff;
-      padding: 15px;
+      margin: 0 auto;
+      padding: 10px;
+      background: white;
       border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
 
     #bookingFormWrapper {
-      max-width: 400px;
-      margin: 0 auto;
+      max-width: 500px;
+      margin: 30px auto;
       background: #fff;
       padding: 20px;
       border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
     }
 
     label {
       display: block;
       margin-top: 15px;
       font-weight: bold;
-      text-align: left;
     }
 
     input, select {
@@ -55,45 +51,65 @@
       border-radius: 4px;
     }
 
-    .checkbox-group {
-      margin: 20px 0;
-      text-align: left;
+    .checkboxes {
+      margin-top: 20px;
     }
 
-    .checkbox-group label {
+    .checkboxes label {
       display: flex;
       align-items: center;
-      margin-bottom: 10px;
       font-weight: normal;
+      margin-bottom: 10px;
     }
 
-    .checkbox-group input {
+    .checkboxes input {
       margin-right: 10px;
       width: auto;
     }
 
     button {
+      margin-top: 20px;
       width: 100%;
-      background-color: #2a77d4;
-      color: #fff;
       padding: 10px;
+      background: #2a77d4;
+      color: white;
       border: none;
       border-radius: 4px;
-      margin-top: 15px;
-      cursor: pointer;
       font-weight: bold;
+      cursor: pointer;
     }
 
-    #startEndTime {
-      margin-top: 10px;
-      font-size: 14px;
+    #startTimeInfo,
+    #endTimeInfo {
+      font-size: 0.9em;
       color: #333;
-      text-align: left;
+      margin-top: 5px;
+    }
+
+    /* Fix für FullCalendar Buttons auf Mobile */
+    .fc-header-toolbar {
+      flex-wrap: wrap !important;
+    }
+
+    .fc-button {
+      font-size: 14px !important;
+      padding: 6px 12px !important;
+    }
+
+    @media (max-width: 600px) {
+      .fc-toolbar-chunk {
+        width: 100%;
+        text-align: center;
+        margin: 5px 0;
+      }
+
+      #calendar {
+        padding: 5px;
+      }
     }
   </style>
 </head>
 <body>
-
   <h1>Besuchskalender</h1>
 
   <div id="calendar"></div>
@@ -109,20 +125,22 @@
       <label for="duration">Dauer:</label>
       <select id="duration" required>
         <option value="30">30 Minuten</option>
-        <option value="60">1 Stunde</option>
+        <option value="60" selected>1 Stunde</option>
         <option value="90">1,5 Stunden</option>
       </select>
 
-      <div id="startEndTime"></div>
-
-      <div class="checkbox-group">
-        <label><input type="checkbox" id="gesund" required /> Ich bin gesund.</label>
-        <label><input type="checkbox" id="datenschutz" required /> Ich bin mit der Datenverarbeitung zur Besuchsplanung einverstanden.</label>
-        <label><input type="checkbox" id="bestaetigung" required /> Ich akzeptiere die Bestätigung per E-Mail.</label>
-      </div>
+      <div id="startTimeInfo"></div>
+      <div id="endTimeInfo"></div>
 
       <input type="hidden" id="selectedDate" />
       <input type="hidden" id="selectedTime" />
+
+      <div class="checkboxes">
+        <label><input type="checkbox" required /> Ich bin gesund.</label>
+        <label><input type="checkbox" required /> Ich bin mit der Datenverarbeitung zur Besuchsplanung einverstanden.</label>
+        <label><input type="checkbox" required /> Ich akzeptiere die Bestätigung per E-Mail.</label>
+      </div>
+
       <button type="submit">Eintragen</button>
     </form>
   </div>
@@ -133,74 +151,69 @@
       const calendar = new FullCalendar.Calendar(calendarEl, {
         locale: "de",
         initialView: "timeGridDay",
-        slotMinTime: "12:00:00",
-        slotMaxTime: "20:00:00",
         slotDuration: "00:30:00",
+        slotMinTime: "13:00:00",
+        slotMaxTime: "20:30:00",
         allDaySlot: false,
         selectable: true,
-        nowIndicator: true,
-        height: "auto",
-        dateClick: function (info) {
-          const startTime = info.date.toISOString().substr(11, 5);
-          const selectedDate = info.date.toISOString().substr(0, 10);
-          document.getElementById("selectedDate").value = selectedDate;
-          document.getElementById("selectedTime").value = startTime;
-          updateStartEndText();
-        },
-        events: "/api/bookings",
-        eventColor: "#f44336",
-        eventTextColor: "#fff",
+        expandRows: true,
+        contentHeight: "auto",
         headerToolbar: {
           left: "prev,next today",
           center: "title",
           right: ""
+        },
+        events: "/api/bookings",
+        dateClick: function (info) {
+          const selectedDate = info.dateStr.split("T")[0];
+          const selectedTime = info.dateStr.split("T")[1].substring(0, 5);
+          document.getElementById("selectedDate").value = selectedDate;
+          document.getElementById("selectedTime").value = selectedTime;
+
+          const duration = parseInt(document.getElementById("duration").value);
+          const [hour, minute] = selectedTime.split(":").map(Number);
+          const end = new Date(0, 0, 0, hour, minute + duration);
+
+          document.getElementById("startTimeInfo").textContent = "Start: " + selectedTime + " Uhr";
+          document.getElementById("endTimeInfo").textContent = "Ende: " + end.toTimeString().substring(0, 5) + " Uhr";
         }
       });
       calendar.render();
 
-      function updateStartEndText() {
-        const start = document.getElementById("selectedTime").value;
-        const duration = parseInt(document.getElementById("duration").value);
-        const startDate = new Date(`1970-01-01T${start}:00`);
-        startDate.setMinutes(startDate.getMinutes() + duration);
-        const end = startDate.toTimeString().substr(0,5);
-        document.getElementById("startEndTime").innerText = `Start: ${start} Uhr\nEnde: ${end} Uhr`;
-      }
-
-      document.getElementById("duration").addEventListener("change", updateStartEndText);
+      document.getElementById("duration").addEventListener("change", () => {
+        const selectedTime = document.getElementById("selectedTime").value;
+        if (selectedTime) {
+          const duration = parseInt(document.getElementById("duration").value);
+          const [hour, minute] = selectedTime.split(":").map(Number);
+          const end = new Date(0, 0, 0, hour, minute + duration);
+          document.getElementById("endTimeInfo").textContent = "Ende: " + end.toTimeString().substring(0, 5) + " Uhr";
+        }
+      });
 
       document.getElementById("bookingForm").addEventListener("submit", async function (e) {
         e.preventDefault();
-        const name = document.getElementById("name").value.trim();
-        const email = document.getElementById("email").value.trim();
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const duration = document.getElementById("duration").value;
         const date = document.getElementById("selectedDate").value;
         const time = document.getElementById("selectedTime").value;
-        const duration = document.getElementById("duration").value;
-
-        const gesund = document.getElementById("gesund").checked;
-        const datenschutz = document.getElementById("datenschutz").checked;
-        const bestaetigung = document.getElementById("bestaetigung").checked;
-
-        if (!name || !email || !date || !time || !duration || !gesund || !datenschutz || !bestaetigung) {
-          alert("Bitte alle Felder ausfüllen und bestätigen.");
-          return;
-        }
 
         const res = await fetch("/api/book", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({ name, email, date, time, duration })
         });
 
         if (res.ok) {
-          alert("Buchung erfolgreich! Du bekommst eine Bestätigung per Mail.");
+          alert("Buchung erfolgreich!");
           location.reload();
         } else {
-          alert("Fehler bei der Buchung. Bitte versuche es erneut.");
+          alert("Buchung fehlgeschlagen.");
         }
       });
     });
   </script>
-
 </body>
 </html>
