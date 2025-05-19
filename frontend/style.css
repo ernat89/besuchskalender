@@ -1,107 +1,110 @@
-/* Grundlayout */
+/* ===== Grundlegendes ===== */
 body {
   font-family: Arial, sans-serif;
-  background: #f4f7fa;
-  margin: 0; padding: 20px;
+  background: #f0f4f8;
+  margin: 0;
+  padding: 20px;
+}
+h1, h2 {
   text-align: center;
+  color: #0077cc;
+  margin-top: 0;
 }
-h1 {
-  color: #2b72d6;
+.hidden {
+  display: none;
 }
 
-/* Kalender-Container */
+/* ===== Sprach‐Switcher ===== */
+.lang-switch {
+  text-align: center;
+  margin-bottom: 10px;
+}
+.lang-switch button {
+  background: #0077cc;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  margin: 0 4px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.lang-switch button:hover {
+  background: #005fa3;
+}
+
+/* ===== Kalender ===== */
 #calendar {
-  max-width: 700px;
-  margin: 0 auto 20px;
-  background: #fff;
+  max-width: 800px;
+  margin: 0 auto 30px auto;
+  background: white;
   border-radius: 8px;
-  padding: 5px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* Formular sichtbar machen */
+/* ===== Formular ===== */
 #bookingFormWrapper {
   max-width: 400px;
   margin: 0 auto;
-  background: #fff;
-  padding: 15px;
+  background: white;
+  padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  display: none;
-  text-align: left;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
-#bookingFormWrapper h2 {
-  text-align: center;
-  color: #2b72d6;
-}
-
-/* Formular-Elemente */
-label {
+#bookingForm label {
   display: block;
   margin-top: 10px;
   font-weight: bold;
 }
-input[type="text"],
-input[type="email"],
-select {
+#bookingForm input,
+#bookingForm select,
+#bookingForm button {
   width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
   box-sizing: border-box;
 }
-
-/* Start/Ende Info */
-#startEndTimeInfo {
-  margin: 10px 0;
-  font-weight: bold;
-  color: #333;
+#bookingForm input,
+#bookingForm select {
+  padding: 8px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
-
-/* Checkboxen */
-fieldset {
-  margin: 15px 0;
+#startTimeInfo, #endTimeInfo {
+  margin-top: 10px;
+  font-weight: bold;
+}
+#bookingForm fieldset {
+  margin-top: 15px;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  background: #f9f9f9;
+  background: #fafafa;
 }
-fieldset legend {
-  font-weight: bold;
-}
-fieldset label {
-  display: block;
-  margin: 5px 0;
+#bookingForm fieldset label {
   font-weight: normal;
+  display: block;
+  margin-bottom: 8px;
   cursor: pointer;
 }
-
-/* Button */
-button {
-  width: 100%;
-  background: #2b72d6;
-  color: #fff;
-  border: none;
+#bookingForm fieldset input {
+  margin-right: 6px;
+}
+#bookingForm button {
+  margin-top: 15px;
   padding: 10px;
-  margin-top: 10px;
-  font-size: 1em;
+  background: #0077cc;
+  color: white;
+  border: none;
   border-radius: 4px;
+  font-size: 1em;
   cursor: pointer;
 }
-button:hover {
-  background: #1a5bb8;
+#bookingForm button:hover {
+  background: #005fa3;
 }
-
-/* Erfolgsmeldung */
 #successMessage {
+  color: green;
   margin-top: 10px;
+  text-align: center;
   font-weight: bold;
-}
-
-/* Responsive: Kalender scrollt nicht endlos auf Mobil */
-@media (max-width: 600px) {
-  #calendar {
-    overflow-x: auto;
-  }
 }
