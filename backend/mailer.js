@@ -10,8 +10,8 @@ const transporter = nodemailer.createTransport({
 
 async function sendConfirmationMail(email, name, date, start, end, token) {
   const cancelUrl = `https://besuchskalender.onrender.com/api/cancel?token=${token}`;
-
-  // Mail an Besucher
+  
+  // Bestätigung an Benutzer
   await transporter.sendMail({
     from: `"Besuchskalender" <${process.env.GMAIL_USER}>`,
     to: email,
@@ -25,7 +25,7 @@ async function sendConfirmationMail(email, name, date, start, end, token) {
     `
   });
 
-  // Info an Admin
+  // Benachrichtigung an Admin
   await transporter.sendMail({
     from: `"Besuchskalender" <${process.env.GMAIL_USER}>`,
     to: "eren.aykanat@web.de",
@@ -33,7 +33,8 @@ async function sendConfirmationMail(email, name, date, start, end, token) {
     html: `
       <p>${name} hat einen Besuch gebucht.</p>
       <p><strong>Datum:</strong> ${date}<br>
-      <strong>Uhrzeit:</strong> ${start} – ${end}</p>
+      <strong>Uhrzeit:</strong> ${start} – ${end}<br>
+      <strong>E-Mail:</strong> ${email}</p>
     `
   });
 }
