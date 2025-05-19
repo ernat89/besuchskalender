@@ -1,4 +1,3 @@
-// package.json im Hauptverzeichnis (also nicht im backend!)
 {
   "name": "besuchskalender-backend",
   "version": "1.0.0",
