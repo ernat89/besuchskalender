@@ -1,43 +1,38 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Besuchskalender</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- FullCalendar CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
-
-  <!-- Eigene Styles -->
-  <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
   <h1>Besuchskalender</h1>
   <div id="calendar"></div>
 
-  <div id="bookingFormWrapper" style="display: none;">
-    <h2>Besuch eintragen</h2>
+  <div id="bookingFormWrapper" style="display:none;">
     <form id="bookingForm">
-      <label for="name">Vorname oder Initiale:</label>
-      <input type="text" id="name" name="name" required>
+      <label for="name">Vorname:</label>
+      <input type="text" id="name" required />
 
-      <label for="email">E-Mail-Adresse:</label>
-      <input type="email" id="email" name="email" required>
-
-      <input type="hidden" id="selectedDate" name="date">
-      <input type="hidden" id="selectedTime" name="time">
+      <label for="email">E-Mail:</label>
+      <input type="email" id="email" required />
 
       <label for="duration">Dauer des Besuchs:</label>
-      <select id="duration" name="duration" required>
-        <option value="">-- Dauer wählen --</option>
+      <select id="duration" required>
+        <option value="">-- Bitte wählen --</option>
         <option value="30">30 Minuten</option>
         <option value="60">1 Stunde</option>
         <option value="90">1,5 Stunden</option>
         <option value="120">2 Stunden</option>
       </select>
 
+      <div id="startTimeInfo"></div>
       <div id="endTimeInfo"></div>
+
+      <input type="hidden" id="selectedDate" />
+      <input type="hidden" id="selectedTime" />
 
       <fieldset>
         <legend>Bitte bestätigen:</legend>
@@ -47,20 +42,12 @@
         <label><input type="checkbox" required> Diese Seite wird ausschließlich privat genutzt.</label>
       </fieldset>
 
+      <input type="submit" value="Buchung abschicken" />
       <div id="successMessage" style="display: none;"></div>
-      <input type="submit" value="Besuch eintragen">
     </form>
   </div>
 
-  <!-- FullCalendar GLOBALS -->
-  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/index.global.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.8/index.global.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.8/index.global.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/locales-all.global.min.js"></script>
-
-  <!-- Dein Script -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
   <script src="calendar.js"></script>
-
 </body>
 </html>
