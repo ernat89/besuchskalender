@@ -5,7 +5,7 @@ body {
   padding: 20px;
 }
 
-h1, h2 {
+h1 {
   text-align: center;
   color: #0077cc;
 }
@@ -16,7 +16,6 @@ h1, h2 {
   background: white;
   border-radius: 10px;
   padding: 10px;
-  z-index: 0;
 }
 
 #bookingFormWrapper {
@@ -26,13 +25,11 @@ h1, h2 {
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  position: relative;
-  z-index: 10;
 }
 
 form label {
   display: block;
-  margin-bottom: 5px;
+  margin-top: 10px;
   font-weight: bold;
 }
 
@@ -40,6 +37,7 @@ form input,
 form select {
   width: 100%;
   padding: 10px;
+  margin-top: 5px;
   margin-bottom: 15px;
   border-radius: 5px;
   border: 1px solid #ccc;
@@ -62,48 +60,25 @@ input[type="submit"] {
   border-radius: 5px;
   padding: 12px;
   cursor: pointer;
-  margin-top: 10px;
 }
 
 input[type="submit"]:hover {
   background-color: #005fa3;
 }
 
-#endTimeInfo {
-  margin-bottom: 10px;
-  font-weight: bold;
-  color: #333;
-}
-
 #successMessage {
   color: green;
-  margin-top: 10px;
   font-weight: bold;
+  margin-top: 10px;
   text-align: center;
 }
 
-.fc .fc-daygrid-day,
-.fc .fc-timegrid-slot {
-  touch-action: manipulation;
-}
-/* Mobile Optimierung für FullCalendar */
 @media (max-width: 600px) {
   #calendar {
-    max-width: 100%;
-    overflow-x: auto;
-    font-size: 0.85rem;
+    font-size: 14px;
   }
 
-  .fc {
-    width: 100% !important;
-  }
-
-  .fc-timegrid-slot-label,
-  .fc-timegrid-axis {
-    font-size: 0.75rem;
-  }
-
-  .fc .fc-toolbar-title {
-    font-size: 1.1rem;
+  .fc .fc-timegrid-slot-label-cushion {
+    font-size: 12px !important;
   }
 }
