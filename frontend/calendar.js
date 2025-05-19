@@ -1,12 +1,8 @@
-// frontend/calendar.js
-
 // Zugriff auf FullCalendar
 const { Calendar, globalLocales } = FullCalendar;
 
 document.addEventListener("DOMContentLoaded", function() {
-  //
-  // 1) Mehrsprachigkeit
-  //
+  // 1) Mehrsprachige Buttontexte
   const translations = {
     de: { today: "Heute" },
     en: { today: "Today" },
@@ -14,9 +10,8 @@ document.addEventListener("DOMContentLoaded", function() {
   };
   let currentLang = "de";
 
-  // Buttons oben im DOM
-  const switcherBtns = document.querySelectorAll("#languageSwitcher button");
-  switcherBtns.forEach(btn => {
+  // Sprach‐Switcher
+  document.querySelectorAll("#languageSwitcher button").forEach(btn => {
     btn.addEventListener("click", () => {
       currentLang = btn.dataset.lang;
       calendar.setOption("locale", currentLang);
@@ -24,9 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 
-  //
-  // 2) FullCalendar initialisieren
-  //
+  // 2) Kalender initialisieren
   const calendarEl = document.getElementById("calendar");
   const calendar = new Calendar(calendarEl, {
     locales: globalLocales,
@@ -48,11 +41,11 @@ document.addEventListener("DOMContentLoaded", function() {
     buttonText: {
       today: translations[currentLang].today
     },
-    // Hier holen wir die Events vom Backend
-    events: function(fetchInfo, successCallback, failureCallback) {
-      const date = fetchInfo.startStr.split("T")[0];
-      fetch(`/api/bookings?date=${date}`)
-        .then(res => res.json())
+    // Events vom Backend holen
+    events(fetchInfo, successCallback, failureCallback) {
+      const day = fetchInfo.startStr.split("T")[0];
+      fetch(`/api/bookings?date=${day}`)
+        .then(r => r.json())
         .then(bookings => {
           const evs = bookings.map(b => ({
             title: `${b.start}–${b.end}  ${b.name}`,
@@ -63,22 +56,17 @@ document.addEventListener("DOMContentLoaded", function() {
           }));
           successCallback(evs);
         })
-        .catch(err => {
-          console.error(err);
-          failureCallback(err);
-        });
+        .catch(err => failureCallback(err));
     },
-    // Klick aufs Zeitraster öffnet das Formular
-    dateClick: function(info) {
+    // Klick aufs Grid öffnet Formular
+    dateClick(info) {
       showForm(info.dateStr);
     }
   });
 
   calendar.render();
 
-  //
-  // 3) Formular-Handling
-  //
+  // 3) Formular‐Logik
   const wrapper    = document.getElementById("bookingFormWrapper");
   const form       = document.getElementById("bookingForm");
   const durationEl = document.getElementById("duration");
@@ -88,7 +76,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
   let selectedDate, selectedTime;
 
-  // Formular anzeigen und Start/Ende berechnen
   function showForm(dateTime) {
     [selectedDate, selectedTime] = dateTime.split("T");
     selectedTime = selectedTime.substr(0,5);
@@ -98,22 +85,21 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   function updateEnd() {
-    const dur = parseInt(durationEl.value, 10);
+    const dur = parseInt(durationEl.value,10);
     if (!selectedTime || isNaN(dur)) {
       endEl.textContent = "";
       return;
     }
     const [h,m] = selectedTime.split(":").map(Number);
-    const d = new Date();
-    d.setHours(h);
-    d.setMinutes(m + dur);
-    const hh = String(d.getHours()).padStart(2,"0");
-    const mm = String(d.getMinutes()).padStart(2,"0");
+    const dt = new Date();
+    dt.setHours(h);
+    dt.setMinutes(m+dur);
+    const hh = String(dt.getHours()).padStart(2,"0");
+    const mm = String(dt.getMinutes()).padStart(2,"0");
     endEl.textContent = `Ende: ${hh}:${mm} Uhr`;
   }
   durationEl.addEventListener("change", updateEnd);
 
-  // Submit
   form.addEventListener("submit", async function(e) {
     e.preventDefault();
     const payload = {
