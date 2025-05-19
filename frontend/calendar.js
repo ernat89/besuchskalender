@@ -1,98 +1,68 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   const calendarEl = document.getElementById("calendar");
-  const bookingFormWrapper = document.getElementById("bookingFormWrapper");
-  const bookingForm = document.getElementById("bookingForm");
-  const successMessage = document.getElementById("successMessage");
+  const formWrapper = document.getElementById("bookingFormWrapper");
+  const successMsg  = document.getElementById("success");
+  const timeInfo    = document.getElementById("timeInfo");
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
-    locale: "de",
-    initialView: "timeGridDay",
-    slotMinTime: "12:00:00",
-    slotMaxTime: "20:00:00",
-    slotDuration: "00:30:00",
+    initialView: 'timeGridDay',
+    locale: 'de',
+    nowIndicator: true,
+    slotMinTime: '12:00:00',
+    slotMaxTime: '20:00:00',
+    slotDuration: '00:30:00',
     selectable: true,
-    height: "auto",
     headerToolbar: {
-      left: "prev,next",
-      center: "title",
-      right: "today"
+      left: 'prev,next today',
+      center: 'title',
+      right: ''
     },
-    buttonText: {
-      today: "Heute"
+    events: async info => {
+      const res = await fetch(`/api/bookings?date=${info.startStr.split("T")[0]}`);
+      return await res.json();
     },
-    dateClick: info => {
-      // Datum + Zeit übernehmen
-      const date = info.dateStr.substring(0, 10);
-      const time = info.dateStr.substring(11, 16);
+    dateClick(info) {
+      const [date, time] = info.dateStr.split("T");
       document.getElementById("selectedDate").value = date;
-      document.getElementById("selectedTime").value = time;
-
-      // Formular anzeigen + Fokus
-      bookingFormWrapper.style.display = "block";
+      document.getElementById("selectedTime").value = time.substr(0,5);
+      formWrapper.classList.remove("hidden");
+      updateTimeInfo();
       document.getElementById("name").focus();
-      updateStartEndTime(time);
-    },
-    events: fetchEvents
+    }
   });
 
   calendar.render();
 
-  async function fetchEvents(fetchInfo, success, failure) {
-    const date = fetchInfo.startStr.substring(0, 10);
-    const res = await fetch(`/api/bookings?date=${date}`);
-    const data = await res.json();
-    const events = data.map(b => ({
-      title: b.name,
-      start: `${b.date}T${b.start}`,
-      end:   `${b.date}T${b.end}`,
-      backgroundColor: "#ff4d4d",
-      borderColor:     "#cc0000"
-    }));
-    success(events);
-  }
-
-  // Dauer-Änderung
-  document.getElementById("duration").addEventListener("change", () => {
-    const startTime = document.getElementById("selectedTime").value;
-    if (startTime) updateStartEndTime(startTime);
-  });
-
-  // Formular absenden
-  bookingForm.addEventListener("submit", async e => {
+  document.getElementById("duration").addEventListener("change", updateTimeInfo);
+  document.getElementById("bookingForm").addEventListener("submit", async e => {
     e.preventDefault();
     const payload = {
-      name:     document.getElementById("name").value,
-      email:    document.getElementById("email").value,
-      date:     document.getElementById("selectedDate").value,
-      time:     document.getElementById("selectedTime").value,
+      name:  document.getElementById("name").value,
+      email: document.getElementById("email").value,
+      date:  document.getElementById("selectedDate").value,
+      time:  document.getElementById("selectedTime").value,
       duration: document.getElementById("duration").value
     };
-
-    const res = await fetch("/api/book", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const res = await fetch('/api/book', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
       body: JSON.stringify(payload)
     });
-
     if (res.ok) {
-      successMessage.innerText = "✅ Termin erfolgreich eingetragen!";
-      calendar.refetchEvents();                // neu laden
-      setTimeout(() => {
-        bookingFormWrapper.style.display = "none";
-        bookingForm.reset();
-        successMessage.innerText = "";
-      }, 1500);
+      successMsg.classList.remove("hidden");
+      setTimeout(()=>location.reload(), 2000);
     } else {
-      successMessage.innerText = "❌ Fehler beim Speichern!";
+      alert("Fehler!");
     }
   });
 
-  function updateStartEndTime(startTime) {
-    const dur = parseInt(document.getElementById("duration").value, 10);
-    const dt  = new Date(`1970-01-01T${startTime}:00Z`);
-    dt.setMinutes(dt.getMinutes() + dur);
-    const end = dt.toISOString().substr(11, 5);
-    document.getElementById("startEndTimeInfo").innerHTML =
-      `<strong>Start:</strong> ${startTime} Uhr<br><strong>Ende:</strong> ${end} Uhr`;
+  function updateTimeInfo() {
+    const start = document.getElementById("selectedTime").value;
+    const dur   = +document.getElementById("duration").value;
+    if (!start) return timeInfo.textContent = '';
+    const [h,m] = start.split(':').map(Number);
+    const d    = new Date(); d.setHours(h); d.setMinutes(m + dur);
+    const end  = d.toTimeString().substr(0,5);
+    timeInfo.textContent = `Start: ${start} Uhr — Ende: ${end} Uhr`;
   }
 });
