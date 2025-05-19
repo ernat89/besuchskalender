@@ -29,7 +29,7 @@
       display: none;
       max-width: 600px;
       margin: 20px auto;
-      padding: 10px;
+      padding: 15px;
       border: 1px solid #ccc;
       background-color: #ffffff;
       border-radius: 8px;
@@ -37,14 +37,31 @@
 
     label {
       display: block;
-      margin: 8px 0 4px;
+      margin: 10px 0 4px;
+      font-weight: bold;
     }
 
     input, select {
       width: 100%;
       padding: 6px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       font-size: 14px;
+    }
+
+    .checkbox-group {
+      margin-top: 10px;
+      padding-left: 5px;
+    }
+
+    .checkbox-group label {
+      font-weight: normal;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .checkbox-group input {
+      width: auto;
+      margin-right: 8px;
     }
 
     #successMessage {
@@ -52,6 +69,13 @@
       font-weight: bold;
       color: green;
       margin-top: 15px;
+    }
+
+    #startTimeInfo,
+    #endTimeInfo {
+      font-weight: bold;
+      margin-top: 5px;
+      color: #333;
     }
 
     @media (max-width: 600px) {
@@ -66,12 +90,6 @@
       select, input, label {
         font-size: 16px;
       }
-
-      #startTimeInfo, #endTimeInfo {
-        font-weight: bold;
-        margin-top: 8px;
-        color: #333;
-      }
     }
   </style>
 </head>
@@ -84,7 +102,7 @@
       <label for="name">Vorname:</label>
       <input type="text" id="name" required />
 
-      <label for="email">E-Mail:</label>
+      <label for="email">E-Mail-Adresse:</label>
       <input type="email" id="email" required />
 
       <label for="duration">Dauer des Besuchs:</label>
@@ -97,15 +115,15 @@
       <div id="startTimeInfo"></div>
       <div id="endTimeInfo"></div>
 
-      <!-- versteckte Felder -->
       <input type="hidden" id="selectedDate" />
       <input type="hidden" id="selectedTime" />
 
-      <!-- DSGVO Zustimmung -->
-      <label><input type="checkbox" required /> Ich bestätige, dass ich Symptomfrei und gesund bin.</label>
-      <label><input type="checkbox" required /> Ich bestätige, dass ich diese Buchung freiwillig vornehme.</label>
-      <label><input type="checkbox" required /> Ich akzeptiere, dass meine Daten temporär gespeichert werden.</label>
-      <label><input type="checkbox" required /> Ich stimme der Datenverarbeitung zur Kontaktaufnahme zu.</label>
+      <div class="checkbox-group">
+        <label><input type="checkbox" required /> Ich habe verstanden, dass mein Vorname im Kalender sichtbar ist.</label>
+        <label><input type="checkbox" required /> Ich willige ein, dass meine Angaben gespeichert und zur Organisation des Besuchs verwendet werden.</label>
+        <label><input type="checkbox" required /> Mir ist bewusst, dass ich meine Buchung selbstständig über den Stornolink in der E-Mail löschen kann.</label>
+        <label><input type="checkbox" required /> Ich versichere, aktuell keine Erkältungssymptome oder ansteckenden Krankheiten zu haben.</label>
+      </div>
 
       <input type="submit" value="Buchung abschicken" />
     </form>
