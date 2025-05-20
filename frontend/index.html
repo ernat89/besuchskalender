@@ -2,21 +2,12 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Besuchskalender</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- FullCalendar CSS -->
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.global.min.css" rel="stylesheet" />
-
-  <!-- Eigene Styles -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="lang-switcher">
-    <!-- wenn du mehrere Sprachen wieder haben willst, muss hier nur JS-Logik hin -->
-    <!-- aktuell nur Deutsch aktiviert -->
-  </div>
-
   <h1>Besuchskalender</h1>
   <div id="calendar"></div>
 
@@ -30,7 +21,7 @@
       <input type="email" id="email" name="email" required />
 
       <label for="duration">Dauer:</label>
-      <select id="duration" name="duration" required>
+      <select id="duration" name="duration">
         <option value="30">30 Minuten</option>
         <option value="60" selected>1 Stunde</option>
         <option value="90">1,5 Stunden</option>
@@ -44,20 +35,17 @@
 
       <fieldset>
         <legend>Bitte bestätigen:</legend>
-        <label><input type="checkbox" id="confirmHealthy" required /> Ich bin gesund und symptomfrei.</label>
-        <label><input type="checkbox" id="confirmData" required /> Ich bin mit der Speicherung meiner Daten einverstanden.</label>
-        <label><input type="checkbox" id="confirmMail" required /> Ich akzeptiere die Bestätigung per E-Mail.</label>
+        <label><input type="checkbox" required /> Ich bin gesund und symptomfrei.</label>
+        <label><input type="checkbox" required /> Ich bin mit Speicherung meiner Daten einverstanden.</label>
+        <label><input type="checkbox" required /> Ich akzeptiere die Bestätigung per E-Mail.</label>
       </fieldset>
 
       <button type="submit">Eintragen</button>
     </form>
   </div>
 
-  <!-- FullCalendar & Plugins -->
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.global.min.js"></script>
-
-  <!-- eigenes JS -->
   <script src="calendar.js"></script>
 </body>
 </html>
