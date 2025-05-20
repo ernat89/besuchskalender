@@ -2,64 +2,80 @@ import express from "express";
 import cors    from "cors";
 import fs      from "fs";
 import path    from "path";
+import { fileURLToPath } from "url";
 
-const app  = express();
-const port = process.env.PORT || 3000;
-const DB    = path.join(process.cwd(), "backend/bookings.json");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = path.dirname(__filename);
+const app        = express();
+const port       = process.env.PORT || 3000;
+const DB         = path.join(__dirname, "bookings.json");
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(process.cwd(), "frontend")));
+app.use(express.static(path.join(__dirname, "../frontend")));
 
-// Lade alle Einträge (Buchungen + Blocker)
-function loadAll() {
-  if (!fs.existsSync(DB)) return [];
-  return JSON.parse(fs.readFileSync(DB));
+// Lade Buchungen/Blocker
+function loadBookings() {
+  return fs.existsSync(DB)
+    ? JSON.parse(fs.readFileSync(DB))
+    : [];
 }
-function saveAll(arr) {
-  fs.writeFileSync(DB, JSON.stringify(arr, null,2));
+function saveBookings(arr) {
+  fs.writeFileSync(DB, JSON.stringify(arr, null, 2));
 }
 
-// 1) User holt sich die Events des Tages (Buchungen + ggf. All-Day-Blocker)
+// GET /api/bookings?date=YYYY-MM-DD
 app.get("/api/bookings", (req, res) => {
-  const { date } = req.query;
-  const all = loadAll().filter(e => e.date === date);
-  // admin-only: allDay-Blocker weitergeben
-  res.json(all);
+  const date = req.query.date;
+  const all  = loadBookings();
+  res.json(all.filter(e => e.date === date));
 });
 
-// 2) User legt eine neue Buchung an
+// POST /api/book
 app.post("/api/book", (req, res) => {
   const { name, email, date, time, duration } = req.body;
   if (!name||!email||!date||!time||!duration) {
     return res.status(400).send("Fehlende Angaben");
   }
-  const arr = loadAll();
-  const start = time;
-  const endDt = new Date(`1970-01-01T${start}:00Z`);
-  endDt.setMinutes(endDt.getMinutes() + duration);
-  const end = endDt.toISOString().substr(11,5);
+  const dt = new Date(`1970-01-01T${time}:00Z`);
+  dt.setMinutes(dt.getMinutes() + parseInt(duration,10));
+  const end = dt.toISOString().substr(11,5);
 
   const token = Date.now().toString(36);
-  arr.push({ type:"booking", name, email, date, start, end, token });
-  saveAll(arr);
+  const entry = { type:"booking", name, email, date, start: time, end, token };
+  const arr   = loadBookings();
+  arr.push(entry);
+  saveBookings(arr);
   res.sendStatus(200);
 });
 
-// 3) Admin setzt All-Day-Blocker (kein Auth-Layer hier, nur über eigenes Admin-HTML erreichbar)
+// POST /api/block?date=YYYY-MM-DD
 app.post("/api/block", (req, res) => {
-  const { date } = req.body;
-  if (!date) return res.status(400).send("Kein Datum");
-  const arr = loadAll();
-  // Prüfen, ob schon ein Blocker existiert
-  if (arr.some(e=> e.type==="block" && e.date===date)) {
-    return res.status(400).send("Bereits blockiert");
+  const date = req.query.date;
+  if (!date) return res.status(400).send("Kein Datum übergeben.");
+  const arr  = loadBookings();
+  // Prüfe, ob Blocker schon existiert
+  if (arr.some(e=>e.type==="block"&&e.date===date)) {
+    return res.status(400).send("Tag bereits gesperrt.");
   }
-  arr.push({ type:"block", date });
-  saveAll(arr);
+  const token = Date.now().toString(36);
+  arr.push({ type:"block", date, token });
+  saveBookings(arr);
   res.sendStatus(200);
 });
 
-app.listen(port, ()=>{
-  console.log(`Server läuft auf Port ${port}`);
+// GET /api/cancel?token=...
+app.get("/api/cancel", (req, res) => {
+  const token = req.query.token;
+  if (!token) return res.status(400).send("Kein Token.");
+  let arr = loadBookings();
+  const len = arr.length;
+  arr = arr.filter(e => e.token !== token);
+  if (arr.length === len) {
+    return res.status(404).send("Nicht gefunden.");
+  }
+  saveBookings(arr);
+  res.send("Gelöscht");
 });
+
+app.listen(port, ()=>console.log(`Server läuft auf Port ${port}`));
