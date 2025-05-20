@@ -4,134 +4,65 @@
   <meta charset="UTF-8" />
   <title>Besuchskalender</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- FullCalendar Stylesheet -->
+  
+  <!-- FullCalendar CSS -->
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
-
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f6f9fc;
+      background-color: #f4f6f9;
       margin: 0;
       padding: 20px;
     }
     h1 {
       text-align: center;
       color: #0077cc;
-      margin-bottom: 10px;
     }
     #calendar {
       max-width: 900px;
-      margin: 0 auto 30px;
-      background: white;
-      border-radius: 10px;
-      padding: 10px;
-    }
-    .fc .fc-button.fc-today-button {
-      display: block;
-      margin: 0 auto 10px;
-    }
-    #bookingFormWrapper {
-      display: none;
-      max-width: 500px;
       margin: 0 auto;
-      background: white;
-      padding: 20px;
+      background: #fff;
+      padding: 10px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    form label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    form input, form select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
-    #endTimeInfo {
-      margin-top: 5px;
-      font-weight: bold;
-    }
-    fieldset {
-      margin-top: 15px;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      background: #f9f9f9;
-    }
-    fieldset label {
-      display: flex;
-      align-items: center;
-      margin-top: 5px;
-      font-weight: normal;
-    }
-    fieldset input {
-      margin-right: 8px;
-    }
-    input[type="submit"] {
-      margin-top: 15px;
-      width: 100%;
-      padding: 10px;
-      background: #0077cc;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-size: 1em;
-      cursor: pointer;
-    }
-    input[type="submit"]:hover {
-      background: #005fa3;
     }
   </style>
 </head>
-
 <body>
+
   <h1>Besuchskalender</h1>
   <div id="calendar"></div>
 
-  <div id="bookingFormWrapper">
-    <h2>Besuch eintragen</h2>
-    <form id="bookingForm">
-      <label for="name">Vorname oder Initiale:</label>
-      <input type="text" id="name" required />
+  <!-- FullCalendar Scripts (Reihenfolge beachten!) -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.global.min.js"></script>
 
-      <label for="email">E-Mail-Adresse:</label>
-      <input type="email" id="email" required />
+  <!-- Dein Kalender-Setup -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const calendarEl = document.getElementById("calendar");
 
-      <input type="hidden" id="selectedDate" />
-      <input type="hidden" id="selectedTime" />
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        locale: "de",
+        initialView: "timeGridDay",
+        slotMinTime: "12:00:00",
+        slotMaxTime: "20:00:00",
+        nowIndicator: true,
+        selectable: true,
+        headerToolbar: {
+          left: "prev,next",
+          center: "title",
+          right: "today"
+        },
+        buttonText: {
+          today: "Heute"
+        },
+        dateClick: function(info) {
+          alert("Geklickt: " + info.dateStr);
+        }
+      });
 
-      <label for="duration">Dauer des Besuchs:</label>
-      <select id="duration" required>
-        <option value="30">30 Minuten</option>
-        <option value="60" selected>1 Stunde</option>
-        <option value="90">1,5 Stunden</option>
-        <option value="120">2 Stunden</option>
-      </select>
-
-      <div id="endTimeInfo"></div>
-
-      <fieldset>
-        <legend>Bitte bestätigen:</legend>
-        <label><input type="checkbox" required /> Ich bin gesund und symptomfrei.</label>
-        <label><input type="checkbox" required /> Ich bin mit der Datenspeicherung einverstanden.</label>
-        <label><input type="checkbox" required /> Ich akzeptiere die Bestätigung per E-Mail.</label>
-      </fieldset>
-
-      <input type="submit" value="Eintragen" />
-    </form>
-  </div>
-
-  <!-- 1) FullCalendar Core + Plugins (TimeGrid, Interaction, etc.) -->
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
-  <!-- 2) Locales (GER/ENG/TR) -->
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.min.js"></script>
-  <!-- 3) Dein Init-Script -->
-  <script src="calendar.js"></script>
+      calendar.render();
+    });
+  </script>
 </body>
 </html>
