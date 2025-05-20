@@ -22,7 +22,7 @@ h1, h2 {
 #bookingFormWrapper {
   display: none;
   max-width: 500px;
-  margin: 0 auto;
+  margin: -20px auto 0 auto; /* sitzt direkt unter dem Kalender */
   background: white;
   padding: 20px;
   border-radius: 10px;
@@ -100,7 +100,7 @@ input[type="submit"]:hover {
   margin-top: 10px;
 }
 
-/* Mobile: Zeit-Slot-Darstellung anklickbar besser erkennen */
+/* auf Mobil: Slots beim Tippen hervorheben */
 @media (max-width: 600px) {
   .fc .fc-timegrid-slot {
     cursor: pointer;
