@@ -1,65 +1,82 @@
 document.addEventListener("DOMContentLoaded", function () {
   const calendarEl = document.getElementById("calendar");
-  const form = document.getElementById("bookingForm");
-  const startInfo = document.getElementById("startTimeInfo");
-  const endInfo = document.getElementById("endTimeInfo");
+  const bookingForm = document.getElementById("bookingForm");
+  const timeDisplay = document.getElementById("timeDisplay");
 
-  let selectedSlot = null;
+  let selectedStart = null;
+  let selectedEnd = null;
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: "timeGridDay",
-    slotMinTime: "12:00:00",
-    slotMaxTime: "20:00:00",
-    allDaySlot: false,
-    locale: "de",
     headerToolbar: {
       left: "prev,next",
       center: "title",
       right: "today"
     },
-    dateClick: function (info) {
-      selectedSlot = info.date;
-      highlightSelectedSlot(info.dateStr);
-      form.style.display = "block";
+    slotMinTime: "12:00:00",
+    slotMaxTime: "20:00:00",
+    selectable: true,
+    nowIndicator: true,
+    select: function (info) {
+      selectedStart = info.start;
+      const duration = parseInt(document.getElementById("duration").value);
+      selectedEnd = new Date(info.start.getTime() + duration * 60000);
 
-      const start = new Date(info.date);
-      const end = new Date(start.getTime() + getDuration());
+      timeDisplay.innerText =
+        "Start: " +
+        selectedStart.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) +
+        " – Ende: " +
+        selectedEnd.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-      startInfo.innerText = formatTime(start);
-      endInfo.innerText = formatTime(end);
+      bookingForm.style.display = "block";
     },
+    events: "/api/bookings"
   });
 
   calendar.render();
 
   document.getElementById("duration").addEventListener("change", () => {
-    if (!selectedSlot) return;
-    const start = new Date(selectedSlot);
-    const end = new Date(start.getTime() + getDuration());
-    endInfo.innerText = formatTime(end);
+    if (selectedStart) {
+      const duration = parseInt(document.getElementById("duration").value);
+      selectedEnd = new Date(selectedStart.getTime() + duration * 60000);
+      timeDisplay.innerText =
+        "Start: " +
+        selectedStart.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) +
+        " – Ende: " +
+        selectedEnd.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
   });
-
-  function getDuration() {
-    const duration = document.getElementById("duration").value;
-    return parseInt(duration) * 60000;
-  }
-
-  function formatTime(date) {
-    return date.toLocaleTimeString("de-DE", {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-  }
-
-  function highlightSelectedSlot(dateStr) {
-    // Entferne alte Markierung
-    document.querySelectorAll(".fc-highlight").forEach(el => el.classList.remove("fc-highlight"));
-
-    const slotElements = document.querySelectorAll(`[data-time]`);
-    slotElements.forEach(el => {
-      if (el.getAttribute("data-time") === dateStr.slice(11, 16) + ":00") {
-        el.classList.add("fc-highlight");
-      }
-    });
-  }
 });
+
+function submitBooking() {
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const duration = parseInt(document.getElementById("duration").value);
+  const check1 = document.getElementById("check1").checked;
+  const check2 = document.getElementById("check2").checked;
+  const check3 = document.getElementById("check3").checked;
+
+  if (!name || !email || !check1 || !check2 || !check3) {
+    alert("Bitte alle Felder korrekt ausfüllen.");
+    return;
+  }
+
+  const start = window.selectedStart.toISOString();
+  const end = new Date(window.selectedStart.getTime() + duration * 60000).toISOString();
+
+  fetch("/api/book", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ name, email, start, end })
+  })
+    .then(res => res.json())
+    .then(data => {
+      alert("Buchung erfolgreich!");
+      location.reload();
+    })
+    .catch(() => {
+      alert("Fehler beim Speichern.");
+    });
+}
