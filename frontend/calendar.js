@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   calendar.render();
 
-  // 1) Buchungen vom Backend holen
+  // 1) Buchungen holen
   async function fetchEvents(fetchInfo, successCallback) {
     const day = fetchInfo.startStr.split("T")[0];
     const res = await fetch(`/api/bookings?date=${day}`);
@@ -34,12 +34,12 @@ document.addEventListener("DOMContentLoaded", function() {
       start: `${b.date}T${b.start}`,
       end:   `${b.date}T${b.end}`,
       backgroundColor: "#ff4d4d",
-      borderColor: "#cc0000"
+      borderColor:     "#cc0000"
     }));
     successCallback(events);
   }
 
-  // 2) Formular öffnen / Werte setzen
+  // 2) Formular öffnen und Zeiten setzen
   function showForm(dateTime) {
     const [date, time] = dateTime.split("T");
     document.getElementById("selectedDate").value = date;
@@ -49,40 +49,40 @@ document.addEventListener("DOMContentLoaded", function() {
     updateEndTime();
   }
 
-  // 3) Endzeit live anzeigen
+  // 3) End-Zeit live anzeigen
   document.getElementById("duration").addEventListener("change", updateEndTime);
   function updateEndTime() {
     const start = document.getElementById("selectedTime").value;
-    const dur = parseInt(document.getElementById("duration").value,10);
+    const dur   = parseInt(document.getElementById("duration").value,10);
     if (!start || isNaN(dur)) {
       document.getElementById("endTimeInfo").textContent = "";
       return;
     }
     const [h,m] = start.split(":").map(Number);
-    const d = new Date(); d.setHours(h); d.setMinutes(m+dur);
+    const d = new Date(); d.setHours(h); d.setMinutes(m + dur);
     const hh = String(d.getHours()).padStart(2,"0");
     const mm = String(d.getMinutes()).padStart(2,"0");
     document.getElementById("endTimeInfo").textContent =
       `Start: ${start} Uhr · Ende: ${hh}:${mm} Uhr`;
   }
 
-  // 4) Formular absenden
+  // 4) Form absenden
   document.getElementById("bookingForm").addEventListener("submit", async e => {
     e.preventDefault();
     const payload = {
-      name:  document.getElementById("name").value,
-      email: document.getElementById("email").value,
-      date:  document.getElementById("selectedDate").value,
-      time:  document.getElementById("selectedTime").value,
+      name:     document.getElementById("name").value,
+      email:    document.getElementById("email").value,
+      date:     document.getElementById("selectedDate").value,
+      time:     document.getElementById("selectedTime").value,
       duration: document.getElementById("duration").value
     };
     const res = await fetch("/api/book", {
-      method: "POST",
-      headers: { "Content-Type":"application/json" },
-      body: JSON.stringify(payload)
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(payload)
     });
     if (res.ok) {
-      // Formular ausblenden & Kalender neu laden
+      // Formular schließen und Kalender aktualisieren
       e.target.reset();
       document.getElementById("bookingFormWrapper").style.display = "none";
       calendar.refetchEvents();
