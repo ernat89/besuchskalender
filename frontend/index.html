@@ -2,33 +2,25 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Besuchskalender</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <!-- FullCalendar CSS -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css"
-    rel="stylesheet"
-  />
-  <!-- Dein eigenes CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.global.min.css" rel="stylesheet" />
+
+  <!-- Eigene Styles -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-  <!-- Sprachumschalter -->
-  <div id="languageSwitcher" class="lang-switch">
-    <button data-lang="de">Deutsch</button>
-    <button data-lang="en">English</button>
-    <button data-lang="tr">Türkçe</button>
+  <div class="lang-switcher">
+    <!-- wenn du mehrere Sprachen wieder haben willst, muss hier nur JS-Logik hin -->
+    <!-- aktuell nur Deutsch aktiviert -->
   </div>
 
-  <!-- Titel -->
-  <h1 id="siteTitle">Besuchskalender</h1>
-
-  <!-- Kalender-Container -->
+  <h1>Besuchskalender</h1>
   <div id="calendar"></div>
 
-  <!-- Formular-Container -->
-  <div id="bookingFormWrapper" class="hidden">
+  <div id="bookingFormWrapper" style="display:none;">
     <h2>Besuch eintragen</h2>
     <form id="bookingForm">
       <label for="name">Vorname:</label>
@@ -45,25 +37,27 @@
         <option value="120">2 Stunden</option>
       </select>
 
-      <div id="startTimeInfo">Start: --:--</div>
-      <div id="endTimeInfo">Ende: --:--</div>
+      <div id="timeInfo">
+        <div id="startTime">Start:</div>
+        <div id="endTime">Ende:</div>
+      </div>
 
       <fieldset>
         <legend>Bitte bestätigen:</legend>
-        <label><input type="checkbox" required /> Ich bin gesund und symptomfrei. Das Risiko ist mir bewusst, ggf. werde ich eine Maske tragen.</label>
-        <label><input type="checkbox" required /> Ich stimme der Datenspeicherung zu.</label>
-        <label><input type="checkbox" required /> Ich akzeptiere die Bestätigung per E-Mail.</label>
+        <label><input type="checkbox" id="confirmHealthy" required /> Ich bin gesund und symptomfrei.</label>
+        <label><input type="checkbox" id="confirmData" required /> Ich bin mit der Speicherung meiner Daten einverstanden.</label>
+        <label><input type="checkbox" id="confirmMail" required /> Ich akzeptiere die Bestätigung per E-Mail.</label>
       </fieldset>
 
-      <div id="successMessage" class="hidden"></div>
       <button type="submit">Eintragen</button>
     </form>
   </div>
 
-  <!-- FullCalendar + Lokalisierung -->
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <!-- FullCalendar & Plugins -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.global.min.js"></script>
-  <!-- Dein Calendar‐Script -->
+
+  <!-- eigenes JS -->
   <script src="calendar.js"></script>
 </body>
 </html>
