@@ -20,41 +20,18 @@ const translations = {
       error: "Es gab ein Problem bei der Stornierung."
     },
     admin: {
-      heading: "Admin-Bereich",
-      loginText: "Bitte Admin-Passwort eingeben:",
-      button: "Einloggen",
-      wrong: "Falsches Passwort.",
+      heading:      "Admin-Bereich",
+      loginText:    "Bitte Admin-Passwort eingeben:",
+      button:       "Einloggen",
+      wrong:        "Falsches Passwort.",
       tableHeading: "Alle Buchungen",
-      noBookings: "Keine Buchungen gefunden."
-    }
-  },
-  tr: {
-    title: "Ziyaret Takvimi",
-    intro: "Hangi saatlerin dolu olduğunu görebilirsin. Uygun bir zaman seçerek ziyaretini kaydedebilirsin.",
-    form: {
-      nameLabel: "Ad veya Baş harf:",
-      emailLabel: "E-posta adresi:",
-      durationLabel: "Ziyaret süresi:",
-      confirm: "Lütfen onaylayın:",
-      check1: "Sağlıklıyım ve semptom göstermiyorum.",
-      check2: "Verilerimin ziyaret koordinasyonu için saklanmasına izin veriyorum.",
-      check3: "Onay e-postası almayı kabul ediyorum.",
-      check4: "Bu site yalnızca özel kullanım içindir.",
-      submit: "Ziyareti kaydet"
-    },
-    cancel: {
-      title: "Ziyareti İptal Et",
-      waiting: "Lütfen bekleyin...",
-      success: "Ziyaretin başarıyla iptal edildi.",
-      error: "İptal sırasında bir hata oluştu."
-    },
-    admin: {
-      heading: "Yönetici Alanı",
-      loginText: "Lütfen yönetici şifresini girin:",
-      button: "Giriş",
-      wrong: "Yanlış şifre.",
-      tableHeading: "Tüm Kayıtlar",
-      noBookings: "Kayıt bulunamadı."
+      noBookings:   "Keine Buchungen gefunden.",
+      // NEU: All-Day-Blocker
+      blockHeading: "Tag sperren",
+      blockLabel:   "Datum wählen:",
+      blockButton:  "Sperren",
+      blockSuccess: "Tag erfolgreich gesperrt.",
+      blockError:   "Fehler beim Sperren des Tages"
     }
   },
   en: {
@@ -78,26 +55,64 @@ const translations = {
       error: "An error occurred during cancellation."
     },
     admin: {
-      heading: "Admin Area",
-      loginText: "Please enter admin password:",
-      button: "Login",
-      wrong: "Wrong password.",
+      heading:      "Admin Area",
+      loginText:    "Please enter admin password:",
+      button:       "Login",
+      wrong:        "Wrong password.",
       tableHeading: "All Bookings",
-      noBookings: "No bookings found."
+      noBookings:   "No bookings found.",
+      // NEW: All-Day-Blocker
+      blockHeading: "Block entire day",
+      blockLabel:   "Pick date:",
+      blockButton:  "Block",
+      blockSuccess: "Day blocked successfully.",
+      blockError:   "Error blocking day"
+    }
+  },
+  tr: {
+    title: "Ziyaret Takvimi",
+    intro: "Hangi saatlerin dolu olduğunu görebilirsin. Uygun bir zaman seçerek ziyaretini kaydedebilirsin.",
+    form: {
+      nameLabel: "Ad veya Baş harf:",
+      emailLabel: "E-posta adresi:",
+      durationLabel: "Ziyaret süresi:",
+      confirm: "Lütfen onaylayın:",
+      check1: "Sağlıklıyım ve semptom göstermiyorum.",
+      check2: "Verilerimin ziyaret koordinasyonu için saklanmasına izin veriyorum.",
+      check3: "Onay e-postası almayı kabul ediyorum.",
+      check4: "Bu site yalnızca özel kullanım içindir.",
+      submit: "Ziyareti kaydet"
+    },
+    cancel: {
+      title: "Ziyareti İptal Et",
+      waiting: "Lütfen bekleyin...",
+      success: "Ziyaretin başarıyla iptal edildi.",
+      error: "İptal sırasında bir hata oluştu."
+    },
+    admin: {
+      heading:      "Yönetici Alanı",
+      loginText:    "Lütfen yönetici şifresini girin:",
+      button:       "Giriş",
+      wrong:        "Yanlış şifre.",
+      tableHeading: "Tüm Kayıtlar",
+      noBookings:   "Kayıt bulunamadı.",
+      // YENİ: All-Day-Blocker
+      blockHeading: "Tüm günü engelle",
+      blockLabel:   "Tarih seçin:",
+      blockButton:  "Engelle",
+      blockSuccess: "Gün başarıyla engellendi.",
+      blockError:   "Engelleme hatası"
     }
   }
 };
 
 function applyTranslations(lang) {
-  const trans = translations[lang] || translations["de"];
-
+  const trans = translations[lang] || translations.de;
   document.title = trans.title;
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const keys = el.dataset.i18n.split(".");
     let value = trans;
-    keys.forEach(k => {
-      value = value?.[k];
-    });
+    keys.forEach(k => value = value?.[k]);
     if (value) el.innerText = value;
   });
 }
