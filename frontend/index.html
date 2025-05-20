@@ -7,7 +7,7 @@
 
   <!-- FullCalendar CSS -->
   <link
-    href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/main.min.css"
+    href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css"
     rel="stylesheet"
   />
 
@@ -17,38 +17,37 @@
 <body>
   <h1>Besuchskalender</h1>
 
-  <!-- Hier wird der Kalender gerendert -->
+  <!-- CALENDAR -->
   <div id="calendar"></div>
 
-  <!-- Formular versteckt starten -->
-  <div id="bookingFormWrapper" style="display: none; margin-top: 20px;">
+  <!-- BOOKING FORM -->
+  <div id="bookingFormWrapper" style="display: none; margin-top: 20px; max-width: 400px; margin: 20px auto;">
     <h2>Besuch eintragen</h2>
     <form id="bookingForm">
       <label for="name">Vorname:</label>
-      <input type="text" id="name" name="name" required />
+      <input type="text" id="name" required />
 
       <label for="email">E-Mail:</label>
-      <input type="email" id="email" name="email" required />
+      <input type="email" id="email" required />
 
       <label for="duration">Dauer:</label>
-      <select id="duration" name="duration" required>
+      <select id="duration" required>
         <option value="30">30 Minuten</option>
         <option value="60" selected>1 Stunde</option>
         <option value="90">1,5 Stunden</option>
         <option value="120">2 Stunden</option>
       </select>
 
-      <div id="startTimeInfo" style="margin-top:5px; font-weight:bold;"></div>
-      <div id="endTimeInfo"   style="margin-bottom:15px; font-weight:bold;"></div>
+      <div id="startTimeInfo" style="margin:5px 0; font-weight:bold;"></div>
+      <div id="endTimeInfo"   style="margin:5px 0; font-weight:bold;"></div>
 
-      <!-- versteckte Felder für Datum + Zeit -->
-      <input type="hidden" id="selectedDate" name="date" />
-      <input type="hidden" id="selectedTime" name="time" />
+      <input type="hidden" id="selectedDate" />
+      <input type="hidden" id="selectedTime" />
 
-      <fieldset style="padding:10px; border:1px solid #ccc; margin-bottom:10px;">
+      <fieldset style="padding:10px; border:1px solid #ccc; margin:10px 0;">
         <legend>Bitte bestätigen:</legend>
-        <label><input type="checkbox" required /> Ich bin gesund und symptomfrei.</label>
-        <label><input type="checkbox" required /> Ich bin mit der Datenspeicherung einverstanden.</label>
+        <label><input type="checkbox" required /> Ich bin gesund und symptomfrei.</label><br/>
+        <label><input type="checkbox" required /> Ich bin mit der Datenspeicherung einverstanden.</label><br/>
         <label><input type="checkbox" required /> Ich akzeptiere die Bestätigung per E-Mail.</label>
       </fieldset>
 
@@ -57,13 +56,11 @@
     <div id="successMessage" style="display:none; color:green; margin-top:10px; font-weight:bold;"></div>
   </div>
 
-  <!-- FullCalendar JS (wichtig: global.min, damit FullCalendar als globales Objekt verfügbar ist) -->
-  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/index.global.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.8/index.global.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.8/index.global.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/locales-all.global.min.js"></script>
+  <!-- FullCalendar Bundle (inkl. TimeGrid, Interaction & Locales) -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.min.js"></script>
 
-  <!-- Dein eigenes Script -->
+  <!-- Dein Kalender-Script -->
   <script src="calendar.js"></script>
 </body>
 </html>
