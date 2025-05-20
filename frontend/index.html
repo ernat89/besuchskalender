@@ -1,15 +1,32 @@
 <!DOCTYPE html>
 <html lang="de">
-:contentReference[oaicite:1]{index=1}e="view:contentReference[oaicite:2]{index=2}scale:contentReference[oaicite:3]{index=3}->
-  :contentReference[oaicite:4]{index=4}t"/>
+<head>
+  <meta charset="UTF-8" />
+  <title>Besuchskalender</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- FullCalendar Stylesheet -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
 
   <style>
     body {
-      font-family:contentReference[oaicite:5]{index=5}h1 {
-  :contentReference[oaicite:6]{index=6} #cal:contentReference[oaicite:7]{index=7}border-radius: 10px;
+      font-family: Arial, sans-serif;
+      background: #f6f9fc;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #0077cc;
+      margin-bottom: 10px;
+    }
+    #calendar {
+      max-width: 900px;
+      margin: 0 auto 30px;
+      background: white;
+      border-radius: 10px;
       padding: 10px;
     }
-    /* zentriertes Heute-Button */
     .fc .fc-button.fc-today-button {
       display: block;
       margin: 0 auto 10px;
@@ -58,7 +75,12 @@
     }
     input[type="submit"] {
       margin-top: 15px;
-      :contentReference[oaicite:8]{index=8}5px;
+      width: 100%;
+      padding: 10px;
+      background: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 5px;
       font-size: 1em;
       cursor: pointer;
     }
@@ -67,8 +89,8 @@
     }
   </style>
 </head>
-<body>
 
+<body>
   <h1>Besuchskalender</h1>
   <div id="calendar"></div>
 
@@ -97,7 +119,7 @@
       <fieldset>
         <legend>Bitte bestätigen:</legend>
         <label><input type="checkbox" required /> Ich bin gesund und symptomfrei.</label>
-        <label><input type="checkbox" required /> Ich bin mit der Datenspeicherung zur Besuchskoordination einverstanden.</label>
+        <label><input type="checkbox" required /> Ich bin mit der Datenspeicherung einverstanden.</label>
         <label><input type="checkbox" required /> Ich akzeptiere die Bestätigung per E-Mail.</label>
       </fieldset>
 
@@ -105,12 +127,11 @@
     </form>
   </div>
 
-  <!-- FullCalendar core + alle offiziellen Plugins in einem Bundle -->
+  <!-- 1) FullCalendar Core + Plugins (TimeGrid, Interaction, etc.) -->
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
-  <!-- alle Locale-Übersetzungen -->
+  <!-- 2) Locales (GER/ENG/TR) -->
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.min.js"></script>
-
-  <!-- Dein Kalender-Script -->
+  <!-- 3) Dein Init-Script -->
   <script src="calendar.js"></script>
 </body>
 </html>
