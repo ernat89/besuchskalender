@@ -24,6 +24,7 @@ const translations = {
       loginText:    "Bitte Admin-Passwort eingeben:",
       button:       "Einloggen",
       wrong:        "Falsches Passwort.",
+      logout:       "Logout",
       tableHeading: "Alle Buchungen",
       noBookings:   "Keine Buchungen gefunden.",
       // NEU: All-Day-Blocker
@@ -59,6 +60,7 @@ const translations = {
       loginText:    "Please enter admin password:",
       button:       "Login",
       wrong:        "Wrong password.",
+      logout:       "Logout",
       tableHeading: "All Bookings",
       noBookings:   "No bookings found.",
       // NEW: All-Day-Blocker
@@ -94,6 +96,7 @@ const translations = {
       loginText:    "Lütfen yönetici şifresini girin:",
       button:       "Giriş",
       wrong:        "Yanlış şifre.",
+      logout:       "Çıkış",
       tableHeading: "Tüm Kayıtlar",
       noBookings:   "Kayıt bulunamadı.",
       // YENİ: All-Day-Blocker
