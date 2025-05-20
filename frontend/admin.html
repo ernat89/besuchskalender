@@ -1,197 +1,37 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title data-i18n="admin.heading">Admin-Bereich</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f3f3f3;
-      padding: 20px;
-    }
-    #languageSwitcher {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-    }
-    h1, h2 {
-      text-align: center;
-      color: #0077cc;
-    }
-    #authSection, #adminContent {
-      max-width: 800px;
-      margin: 30px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      font-size: 1em;
-      margin-top: 10px;
-    }
-    button {
-      margin-top: 15px;
-      padding: 10px 15px;
-      font-size: 1em;
-      background-color: #0077cc;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      padding: 10px;
-      border: 1px solid #ccc;
-    }
-    th {
-      background: #0077cc;
-      color: white;
-    }
-    tr:nth-child(even) {
-      background: #f9f9f9;
-    }
-    td button {
-      background-color: #cc0000;
-      border: none;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .logout-btn {
-      float: right;
-      background: #888;
-      margin-top: -30px;
-    }
-  </style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Admin – All-Day-Blocker</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <div style="text-align:right;">
-    <label for="languageSwitcher">🌍 Sprache:</label>
-    <select id="languageSwitcher">
-      <option value="de">Deutsch</option>
-      <option value="tr">Türkçe</option>
-      <option value="en">English</option>
-    </select>
-  </div>
+  <h1>Admin: All-Day-Block setzen</h1>
+  <form id="blockForm">
+    <label for="blockDate">Datum (JJJJ-MM-TT):</label>
+    <input type="date" id="blockDate" required/>
+    <button type="submit">Blockieren</button>
+  </form>
+  <div id="msg"></div>
 
-  <h1 data-i18n="admin.heading">Admin-Bereich</h1>
-
-  <div id="authSection">
-    <p data-i18n="admin.loginText">Bitte Admin-Passwort eingeben:</p>
-    <input type="password" id="adminPassword" placeholder="Passwort...">
-    <button onclick="checkPassword()" data-i18n="admin.button">Einloggen</button>
-    <p id="authStatus" style="color:red;"></p>
-  </div>
-
-  <div id="adminContent" style="display: none;">
-    <button class="logout-btn" onclick="logout()">Logout</button>
-    <h2 data-i18n="admin.tableHeading">Alle Buchungen</h2>
-    <table id="bookingTable">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>E-Mail</th>
-          <th>Datum</th>
-          <th>Start</th>
-          <th>Ende</th>
-          <th>Token</th>
-          <th>Aktion</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
-  <script src="i18n.js"></script>
   <script>
-    const ADMIN_PASSWORD = "ErNat1989!";
-
-    const lang = localStorage.getItem("lang") || "de";
-    const switcher = document.getElementById("languageSwitcher");
-    switcher.value = lang;
-    applyTranslations(lang);
-
-    switcher.addEventListener("change", () => {
-      localStorage.setItem("lang", switcher.value);
-      applyTranslations(switcher.value);
-    });
-
-    if (localStorage.getItem("adminLoggedIn") === "true") {
-      document.addEventListener("DOMContentLoaded", () => {
-        showAdminContent();
+    document.getElementById("blockForm").addEventListener("submit", async e=>{
+      e.preventDefault();
+      const date = e.target.blockDate.value;
+      const res  = await fetch("/api/block", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({date})
       });
-    }
-
-    function checkPassword() {
-      const entered = document.getElementById("adminPassword").value;
-      if (entered === ADMIN_PASSWORD) {
-        localStorage.setItem("adminLoggedIn", "true");
-        showAdminContent();
+      const msg = document.getElementById("msg");
+      if (res.ok) {
+        msg.textContent = "✅ All-Day-Blocker gesetzt.";
       } else {
-        document.getElementById("authStatus").textContent = translations[lang].admin.wrong;
+        const txt = await res.text();
+        msg.textContent = "❌ "+txt;
       }
-    }
-
-    function showAdminContent() {
-      document.getElementById("authSection").style.display = "none";
-      document.getElementById("adminContent").style.display = "block";
-      loadBookings();
-    }
-
-    async function loadBookings() {
-      const today = new Date().toISOString().split("T")[0];
-      const res = await fetch("/api/bookings?date=" + today);
-      const data = await res.json();
-      const tbody = document.querySelector("#bookingTable tbody");
-
-      if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7">${translations[lang].admin.noBookings}</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = "";
-      data.forEach(b => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${b.name}</td>
-          <td>${b.email}</td>
-          <td>${b.date}</td>
-          <td>${b.start}</td>
-          <td>${b.end}</td>
-          <td>${b.token}</td>
-          <td><button onclick="deleteBooking('${b.token}')">🗑️</button></td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    function deleteBooking(token) {
-      if (!confirm("Willst du diesen Eintrag wirklich löschen?")) return;
-      fetch("/api/cancel?token=" + token)
-        .then(res => res.text())
-        .then(() => {
-          alert("Eintrag gelöscht.");
-          loadBookings();
-        })
-        .catch(() => {
-          alert("Fehler beim Löschen.");
-        });
-    }
-
-    function logout() {
-      localStorage.removeItem("adminLoggedIn");
-      location.reload();
-    }
+    });
   </script>
 </body>
 </html>
