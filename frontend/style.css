@@ -1,111 +1,60 @@
 body {
   font-family: Arial, sans-serif;
-  background: #f6f9fc;
+  background: #f5f8fc;
   margin: 0;
-  padding: 20px;
+  padding: 0;
+  text-align: center;
 }
 
-h1, h2 {
-  text-align: center;
-  color: #0077cc;
+.title {
+  color: #2b6cb0;
+  margin: 20px;
 }
 
 #calendar {
   max-width: 900px;
-  margin: 0 auto 30px;
+  margin: 0 auto;
   background: white;
-  border-radius: 10px;
   padding: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border-radius: 10px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
 }
 
-#bookingFormWrapper {
-  display: none;
-  max-width: 500px;
-  margin: -20px auto 0 auto; /* sitzt direkt unter dem Kalender */
-  background: white;
+#bookingForm {
+  max-width: 600px;
+  margin: 30px auto;
   padding: 20px;
+  background: white;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+  display: none;
+  text-align: left;
 }
 
-form label {
+#bookingForm label {
   display: block;
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-form input[type="text"],
-form input[type="email"],
-form select {
-  width: 100%;
-  padding: 10px;
-  margin-top: 4px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-sizing: border-box;
-}
-
-fieldset {
   margin-top: 15px;
+}
+
+#bookingForm input,
+#bookingForm select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+}
+
+#bookingForm button {
+  margin-top: 20px;
+  width: 100%;
   padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: #f9f9f9;
-}
-
-fieldset legend {
-  font-weight: bold;
-  color: #444;
-}
-
-fieldset label {
-  display: block;
-  margin: 8px 0;
-  cursor: pointer;
-}
-
-input[type="checkbox"] {
-  margin-right: 8px;
-}
-
-input[type="submit"] {
-  background: #0077cc;
+  background-color: #2b6cb0;
   color: white;
   border: none;
-  padding: 12px;
-  font-size: 1.1em;
   border-radius: 6px;
   cursor: pointer;
-  width: 100%;
+}
+
+#timeDisplay {
+  font-weight: bold;
   margin-top: 15px;
-}
-
-input[type="submit"]:hover {
-  background: #005fa3;
-}
-
-#startTimeInfo,
-#endTimeInfo {
-  margin-top: 10px;
-  font-weight: bold;
-  color: #333;
-}
-
-#successMessage {
-  display: none;
-  color: green;
-  font-weight: bold;
-  text-align: center;
-  margin-top: 10px;
-}
-
-/* auf Mobil: Slots beim Tippen hervorheben */
-@media (max-width: 600px) {
-  .fc .fc-timegrid-slot {
-    cursor: pointer;
-  }
-  .fc .fc-timegrid-slot:hover {
-    background: rgba(0, 123, 204, 0.1) !important;
-  }
 }
