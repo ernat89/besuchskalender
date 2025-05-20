@@ -15,16 +15,13 @@ document.addEventListener("DOMContentLoaded", function() {
       center: "title",
       right: "today"
     },
-    buttonText: {
-      today: "Heute"
-    },
+    buttonText: { today: "Heute" },
     events: fetchEvents,
     dateClick: info => showForm(info.dateStr)
   });
 
   calendar.render();
 
-  // 1) Buchungen holen
   async function fetchEvents(fetchInfo, successCallback) {
     const day = fetchInfo.startStr.split("T")[0];
     const res = await fetch(`/api/bookings?date=${day}`);
@@ -39,7 +36,6 @@ document.addEventListener("DOMContentLoaded", function() {
     successCallback(events);
   }
 
-  // 2) Formular öffnen und Zeiten setzen
   function showForm(dateTime) {
     const [date, time] = dateTime.split("T");
     document.getElementById("selectedDate").value = date;
@@ -49,8 +45,8 @@ document.addEventListener("DOMContentLoaded", function() {
     updateEndTime();
   }
 
-  // 3) End-Zeit live anzeigen
   document.getElementById("duration").addEventListener("change", updateEndTime);
+
   function updateEndTime() {
     const start = document.getElementById("selectedTime").value;
     const dur   = parseInt(document.getElementById("duration").value,10);
@@ -66,7 +62,6 @@ document.addEventListener("DOMContentLoaded", function() {
       `Start: ${start} Uhr · Ende: ${hh}:${mm} Uhr`;
   }
 
-  // 4) Form absenden
   document.getElementById("bookingForm").addEventListener("submit", async e => {
     e.preventDefault();
     const payload = {
@@ -82,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function() {
       body:    JSON.stringify(payload)
     });
     if (res.ok) {
-      // Formular schließen und Kalender aktualisieren
+      // Formular zurücksetzen, schließen, und Events neu holen
       e.target.reset();
       document.getElementById("bookingFormWrapper").style.display = "none";
       calendar.refetchEvents();
