@@ -4,11 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Besuchskalender</title>
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.global.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>Besuchskalender</h1>
+
   <div id="calendar"></div>
 
   <div id="bookingFormWrapper" style="display:none;">
@@ -44,8 +45,10 @@
     </form>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.global.min.js"></script>
+  <!-- FullCalendar Global Bundle (Core + Plugins) -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.global.min.js"></script>
+  <!-- Dein Script -->
   <script src="calendar.js"></script>
 </body>
 </html>
