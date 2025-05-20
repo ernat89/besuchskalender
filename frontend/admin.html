@@ -1,37 +1,180 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Admin – All-Day-Blocker</title>
-  <link rel="stylesheet" href="style.css"/>
+  <meta charset="UTF-8">
+  <title data-i18n="admin.heading">Admin-Bereich</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* (euer bestehendes CSS bleibt unverändert) */
+  </style>
 </head>
 <body>
-  <h1>Admin: All-Day-Block setzen</h1>
-  <form id="blockForm">
-    <label for="blockDate">Datum (JJJJ-MM-TT):</label>
-    <input type="date" id="blockDate" required/>
-    <button type="submit">Blockieren</button>
-  </form>
-  <div id="msg"></div>
+  <div id="languageSwitcher" style="text-align:right; padding:10px;">
+    <label for="lang">🌍</label>
+    <select id="lang">
+      <option value="de">Deutsch</option>
+      <option value="en">English</option>
+      <option value="tr">Türkçe</option>
+    </select>
+  </div>
 
+  <h1 data-i18n="admin.heading">Admin-Bereich</h1>
+
+  <!-- Login -->
+  <div id="authSection">
+    <p data-i18n="admin.loginText">Bitte Admin-Passwort eingeben:</p>
+    <input type="password" id="adminPassword" placeholder="••••••••">
+    <button onclick="checkPassword()" data-i18n="admin.button">Einloggen</button>
+    <p id="authStatus" style="color:red;"></p>
+  </div>
+
+  <!-- Admin Content -->
+  <div id="adminContent" style="display:none; max-width:800px; margin:30px auto;">
+    <button class="logout-btn" onclick="logout()" data-i18n="admin.logout">Logout</button>
+
+    <!-- Neu: All-Day-Blocker -->
+    <section id="blockSection" style="background:#fff;padding:20px;margin-bottom:20px;border-radius:8px;">
+      <h2 data-i18n="admin.blockHeading">Tag sperren</h2>
+      <form id="blockForm">
+        <label for="blockDate" data-i18n="admin.blockLabel">Datum wählen:</label>
+        <input type="date" id="blockDate" required>
+        <button type="submit" data-i18n="admin.blockButton">Sperren</button>
+      </form>
+      <p id="blockStatus"></p>
+    </section>
+
+    <!-- Bisherige Buchungsliste -->
+    <h2 data-i18n="admin.tableHeading">Alle Buchungen</h2>
+    <table id="bookingTable">
+      <thead>
+        <tr>
+          <th data-i18n="admin.colName">Name</th>
+          <th data-i18n="admin.colEmail">E-Mail</th>
+          <th data-i18n="admin.colDate">Datum</th>
+          <th data-i18n="admin.colStart">Start</th>
+          <th data-i18n="admin.colEnd">Ende</th>
+          <th data-i18n="admin.colToken">Token</th>
+          <th data-i18n="admin.colAction">Aktion</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script src="i18n.js"></script>
   <script>
-    document.getElementById("blockForm").addEventListener("submit", async e=>{
-      e.preventDefault();
-      const date = e.target.blockDate.value;
-      const res  = await fetch("/api/block", {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({date})
+    // Passwort, Übersetzung, Auth & Laden wie gehabt
+    const ADMIN_PASSWORD = "ErNat1989!";
+    const translations    = window.translations; // aus i18n.js
+
+    // Sprache initial
+    const savedLang = localStorage.getItem("lang") || "de";
+    document.getElementById("lang").value = savedLang;
+    applyTranslations(savedLang);
+
+    document.getElementById("lang")
+      .addEventListener("change", e => {
+        localStorage.setItem("lang", e.target.value);
+        applyTranslations(e.target.value);
       });
-      const msg = document.getElementById("msg");
-      if (res.ok) {
-        msg.textContent = "✅ All-Day-Blocker gesetzt.";
+
+    // Auth prüfen
+    if (localStorage.getItem("adminLoggedIn")==="true") {
+      document.getElementById("authSection").style.display = "none";
+      document.getElementById("adminContent").style.display = "block";
+      initAdmin();
+    }
+
+    function checkPassword() {
+      if (document.getElementById("adminPassword").value === ADMIN_PASSWORD) {
+        localStorage.setItem("adminLoggedIn","true");
+        document.getElementById("authSection").style.display = "none";
+        document.getElementById("adminContent").style.display = "block";
+        initAdmin();
       } else {
-        const txt = await res.text();
-        msg.textContent = "❌ "+txt;
+        document.getElementById("authStatus")
+          .textContent = translations[savedLang].admin.wrongPassword;
       }
-    });
+    }
+
+    function logout() {
+      localStorage.removeItem("adminLoggedIn");
+      location.reload();
+    }
+
+    // Sobald Admin eingeloggt ist:
+    function initAdmin() {
+      loadBookings();
+      setupBlockForm();
+    }
+
+    // --- Buchungen laden & Tabelle füllen ---
+    async function loadBookings() {
+      const today = new Date().toISOString().substr(0,10);
+      const res   = await fetch("/api/bookings?date="+today);
+      const data  = await res.json();
+      const tbody = document.querySelector("#bookingTable tbody");
+      const lang  = localStorage.getItem("lang");
+
+      if (data.length===0) {
+        tbody.innerHTML = `<tr><td colspan="7">
+          ${translations[lang].admin.noBookings}
+        </td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML="";
+      data.forEach(b => {
+        if (b.type==="booking") {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${b.name}</td>
+            <td>${b.email}</td>
+            <td>${b.date}</td>
+            <td>${b.start}</td>
+            <td>${b.end}</td>
+            <td>${b.token}</td>
+            <td>
+              <button onclick="deleteBooking('${b.token}')">
+                🗑️
+              </button>
+            </td>`;
+          tbody.appendChild(tr);
+        }
+      });
+    }
+
+    function deleteBooking(token) {
+      if (!confirm("Löschen?")) return;
+      fetch("/api/cancel?token="+token)
+        .then(_=> loadBookings())
+        .catch(_=> alert("Fehler"));
+    }
+
+    // --- Blocker-Formular ---
+    function setupBlockForm() {
+      const form  = document.getElementById("blockForm");
+      const stat  = document.getElementById("blockStatus");
+      const lang  = localStorage.getItem("lang");
+
+      form.addEventListener("submit", async e=>{
+        e.preventDefault();
+        const date = document.getElementById("blockDate").value;
+        const res  = await fetch("/api/block", {
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({date})
+        });
+        if (res.ok) {
+          stat.textContent = translations[lang].admin.blockSuccess;
+          loadBookings();
+        } else {
+          const txt = await res.text();
+          stat.textContent = translations[lang].admin.blockError + ": " + txt;
+        }
+      });
+    }
   </script>
 </body>
 </html>
