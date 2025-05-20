@@ -11,19 +11,23 @@
     rel="stylesheet"
   />
 
-  <!-- eigenes CSS -->
+  <!-- Unser CSS -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>Besuchskalender</h1>
 
-  <!-- Kalender-Container -->
+  <!-- Der Kalender -->
   <div id="calendar"></div>
 
-  <!-- Formular-Wrapper, wird per JS sichtbar -->
+  <!-- Formular (anfangs versteckt) -->
   <div id="bookingFormWrapper">
     <h2>Besuch eintragen</h2>
     <form id="bookingForm">
+      <!-- Diese beiden Felder werden per JS befüllt -->
+      <input type="hidden" id="selectedDate" name="date" />
+      <input type="hidden" id="selectedTime" name="time" />
+
       <label for="name">Vorname:</label>
       <input type="text" id="name" name="name" required />
 
@@ -46,7 +50,7 @@
 
       <fieldset>
         <legend>Bitte bestätigen:</legend>
-        <label><input type="checkbox" required /> Ich bin gesund und symptomfrei.</label>
+        <label><input type="checkbox" required /> Ich bin gesund und symptom- frei.</label>
         <label><input type="checkbox" required /> Ich bin mit der Speicherung meiner Daten einverstanden.</label>
         <label><input type="checkbox" required /> Ich akzeptiere die Bestätigung per E-Mail.</label>
       </fieldset>
@@ -56,11 +60,11 @@
     </form>
   </div>
 
-  <!-- FullCalendar und Plugins -->
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.global.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.global.min.js"></script>
+  <!-- FullCalendar + Locale -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.min.js"></script>
 
-  <!-- eigenes JS -->
+  <!-- Unser Kalender-Skript -->
   <script src="calendar.js"></script>
 </body>
 </html>
