@@ -1,84 +1,22 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Besuchskalender</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f8fa;
-      margin: 0;
-      padding: 0;
-    }
-    h1 {
-      text-align: center;
-      color: #2c75ff;
-      margin-top: 20px;
-    }
-    #calendar {
-      max-width: 90%;
-      margin: 30px auto;
-      background-color: white;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    #bookingForm {
-      max-width: 500px;
-      margin: 30px auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      display: none;
-    }
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      box-sizing: border-box;
-    }
-    label {
-      display: block;
-      margin: 10px 0 5px;
-    }
-    button {
-      background-color: #2c75ff;
-      color: white;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      width: 100%;
-      cursor: pointer;
-    }
-    .checkboxes label {
-      display: flex;
-      align-items: center;
-      margin: 8px 0;
-    }
-    .checkboxes input {
-      width: auto;
-      margin-right: 10px;
-    }
-    @media(max-width: 600px) {
-      #calendar {
-        width: 95%;
-      }
-    }
-  </style>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Besuchskalender</h1>
+  <h1 class="title">Besuchskalender</h1>
   <div id="calendar"></div>
 
-  <form id="bookingForm">
+  <div id="bookingForm">
     <label for="name">Vorname oder Kürzel:</label>
-    <input type="text" id="name" required>
+    <input type="text" id="name" />
 
     <label for="email">E-Mail:</label>
-    <input type="email" id="email" required>
+    <input type="email" id="email" />
 
     <label for="duration">Dauer:</label>
     <select id="duration">
@@ -86,56 +24,16 @@
       <option value="60">1 Stunde</option>
     </select>
 
-    <div class="checkboxes">
-      <label><input type="checkbox" required> Ich bin gesund und symptomfrei.</label>
-      <label><input type="checkbox" required> Ich bin mit der Datenverarbeitung zur Besuchsplanung einverstanden.</label>
-      <label><input type="checkbox" required> Ich akzeptiere die Bestätigung per E-Mail.</label>
-    </div>
+    <div id="timeDisplay"></div>
 
-    <button type="submit">Eintragen</button>
-  </form>
+    <label><input type="checkbox" id="check1" /> Ich bin gesund und symptomfrei.</label>
+    <label><input type="checkbox" id="check2" /> Ich bin mit der Datenverarbeitung zur Besuchsplanung einverstanden.</label>
+    <label><input type="checkbox" id="check3" /> Ich akzeptiere die Bestätigung per E-Mail.</label>
 
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const calendarEl = document.getElementById("calendar");
-      const form = document.getElementById("bookingForm");
-      let selectedStart;
+    <button onclick="submitBooking()">Eintragen</button>
+  </div>
 
-      const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'timeGridDay',
-        allDaySlot: false,
-        slotMinTime: "12:00:00",
-        slotMaxTime: "20:00:00",
-        slotDuration: "00:30:00",
-        height: "auto",
-        locale: 'de',
-        dateClick: function(info) {
-          selectedStart = info.date;
-          form.style.display = "block";
-          form.scrollIntoView({ behavior: 'smooth' });
-        }
-      });
-
-      calendar.render();
-
-      form.addEventListener("submit", function (e) {
-        e.preventDefault();
-        const name = document.getElementById("name").value;
-        const email = document.getElementById("email").value;
-        const duration = parseInt(document.getElementById("duration").value);
-        const end = new Date(selectedStart.getTime() + duration * 60000);
-
-        calendar.addEvent({
-          title: name,
-          start: selectedStart,
-          end: end
-        });
-
-        form.reset();
-        form.style.display = "none";
-      });
-    });
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
+  <script src="calendar.js"></script>
 </body>
 </html>
