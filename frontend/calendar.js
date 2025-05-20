@@ -1,102 +1,106 @@
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded", function() {
   const calendarEl = document.getElementById("calendar");
-  let selectionBg = null;
+  let highlightEvent = null;
+  let selectedDate = null;
 
-  const cal = new FullCalendar.Calendar(calendarEl, {
-    initialView: "timeGridDay",
-    locale: "de",
-    slotDuration: "00:30:00",
-    slotMinTime: "13:00:00",
-    slotMaxTime: "20:00:00",
-    nowIndicator: true,
-    allDaySlot: false,
-    selectable: true,
-    headerToolbar: { left:"prev,next", center:"title", right:"" },
-    buttonText: { today:"Heute" },
-    events: async (info, success, fail) => {
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView:    "timeGridDay",
+    locale:         "de",
+    slotDuration:   "00:30:00",
+    slotMinTime:    "13:00:00",
+    slotMaxTime:    "20:00:00",
+    nowIndicator:   true,
+    allDaySlot:     false,
+    selectable:     true,
+    headerToolbar:  { left:"prev,next today", center:"title", right:"" },
+    buttonText:     { today: "Heute" },
+
+    events: async (info, success, failure) => {
       try {
         const date = info.startStr.split("T")[0];
-        let res = await fetch(`/api/bookings?date=${date}`);
-        let data = await res.json();
-        success(data.map(b => ({
-          title: "Belegt",
-          start: b.date+"T"+b.start,
-          end:   b.date+"T"+b.end,
+        const res  = await fetch(`/api/bookings?date=${date}`);
+        const arr  = await res.json();
+        success(arr.map(b => ({
+          title:          "Belegt",
+          start:          `${b.date}T${b.start}`,
+          end:            `${b.date}T${b.end}`,
           backgroundColor:"#ff4d4d",
-          borderColor:"#cc0000",
-          display:"block"
+          borderColor:    "#cc0000",
+          display:        "block"
         })));
-      } catch(e){
-        fail(e);
+      } catch (e) {
+        failure(e);
       }
     },
+
     dateClick: info => {
-      if (selectionBg) selectionBg.remove();
-      let end = new Date(info.date.getTime()+30*60000);
-      selectionBg = cal.addEvent({
-        display:"background",
-        start:info.date,
-        end:end,
-        backgroundColor:"#0077cc40"
+      // Hintergrund-Markierung
+      if (highlightEvent) highlightEvent.remove();
+      const end = new Date(info.date.getTime() + 30*60000);
+      highlightEvent = calendar.addEvent({
+        display:         "background",
+        start:           info.date,
+        end:             end,
+        backgroundColor: "#0077cc40"
       });
-      openForm(info.date);
+
+      // Form öffnen
+      selectedDate = info.date;
+      document.getElementById("bookingFormWrapper").style.display = "block";
+      updateTimeInfo();
+      document.getElementById("name").focus();
     }
   });
 
-  cal.render();
+  calendar.render();
 
-  const formWrap = document.getElementById("bookingFormWrapper");
-  const form = document.getElementById("bookingForm");
-  const sEl = document.getElementById("startTime");
-  const eEl = document.getElementById("endTime");
-  let selDate = null;
+  // Form-Logik
+  const form     = document.getElementById("bookingForm");
+  const startEl  = document.getElementById("startTime");
+  const endEl    = document.getElementById("endTime");
+  const durSel   = document.getElementById("duration");
 
-  function openForm(dt){
-    selDate = dt;
-    formWrap.style.display="block";
-    updateTimes();
-    document.getElementById("name").focus();
-  }
+  durSel.addEventListener("change", updateTimeInfo);
 
-  document.getElementById("duration").addEventListener("change", updateTimes);
+  function updateTimeInfo() {
+    if (!selectedDate) return;
+    const hh = String(selectedDate.getHours()).padStart(2,"0");
+    const mm = String(selectedDate.getMinutes()).padStart(2,"0");
+    const dur= parseInt(durSel.value,10);
+    const endDate = new Date(selectedDate.getTime() + dur*60000);
+    const eh = String(endDate.getHours()).padStart(2,"0");
+    const em = String(endDate.getMinutes()).padStart(2,"0");
 
-  function updateTimes(){
-    if (!selDate) return;
-    let hh = String(selDate.getHours()).padStart(2,"0"),
-        mm = String(selDate.getMinutes()).padStart(2,"0"),
-        dur = parseInt(form.duration.value,10);
-    let end = new Date(selDate.getTime()+dur*60000);
-    let eh = String(end.getHours()).padStart(2,"0"),
-        em = String(end.getMinutes()).padStart(2,"0");
-    sEl.textContent = `Start: ${hh}:${mm} Uhr`;
-    eEl.textContent = `Ende: ${eh}:${em} Uhr`;
+    startEl.textContent = `Start: ${hh}:${mm} Uhr`;
+    endEl.textContent   = `Ende: ${eh}:${em} Uhr`;
   }
 
   form.addEventListener("submit", async e=>{
     e.preventDefault();
     const payload = {
-      name: form.name.value.trim(),
-      email: form.email.value.trim(),
-      date: selDate.toISOString().split("T")[0],
-      time: selDate.toTimeString().substr(0,5),
-      duration: parseInt(form.duration.value,10)
+      name:     form.name.value.trim(),
+      email:    form.email.value.trim(),
+      date:     selectedDate.toISOString().split("T")[0],
+      time:     selectedDate.toTimeString().substr(0,5),
+      duration: parseInt(durSel.value,10)
     };
+
     try {
-      let res = await fetch("/api/book", {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify(payload)
+      const res = await fetch("/api/book", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(payload)
       });
       if (res.ok) {
+        calendar.refetchEvents();
         form.reset();
-        formWrap.style.display="none";
-        if (selectionBg) selectionBg.remove();
-        cal.refetchEvents();
+        document.getElementById("bookingFormWrapper").style.display = "none";
+        if (highlightEvent) highlightEvent.remove();
         alert("Buchung erfolgreich!");
       } else {
         alert("Fehler beim Speichern.");
       }
-    } catch(err){
+    } catch (err) {
       console.error(err);
       alert("Serverfehler");
     }
