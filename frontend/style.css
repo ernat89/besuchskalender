@@ -1,110 +1,111 @@
-/* ===== Grundlegendes ===== */
 body {
   font-family: Arial, sans-serif;
-  background: #f0f4f8;
+  background: #f6f9fc;
   margin: 0;
   padding: 20px;
 }
+
 h1, h2 {
   text-align: center;
   color: #0077cc;
-  margin-top: 0;
-}
-.hidden {
-  display: none;
 }
 
-/* ===== Sprach‐Switcher ===== */
-.lang-switch {
-  text-align: center;
-  margin-bottom: 10px;
-}
-.lang-switch button {
-  background: #0077cc;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  margin: 0 4px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.lang-switch button:hover {
-  background: #005fa3;
-}
-
-/* ===== Kalender ===== */
 #calendar {
-  max-width: 800px;
-  margin: 0 auto 30px auto;
+  max-width: 900px;
+  margin: 0 auto 30px;
   background: white;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-/* ===== Formular ===== */
 #bookingFormWrapper {
-  max-width: 400px;
+  display: none;
+  max-width: 500px;
   margin: 0 auto;
   background: white;
   padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
-#bookingForm label {
+
+form label {
   display: block;
   margin-top: 10px;
   font-weight: bold;
 }
-#bookingForm input,
-#bookingForm select,
-#bookingForm button {
+
+form input[type="text"],
+form input[type="email"],
+form select {
   width: 100%;
-  box-sizing: border-box;
-}
-#bookingForm input,
-#bookingForm select {
-  padding: 8px;
+  padding: 10px;
   margin-top: 4px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
+  box-sizing: border-box;
 }
-#startTimeInfo, #endTimeInfo {
-  margin-top: 10px;
-  font-weight: bold;
-}
-#bookingForm fieldset {
+
+fieldset {
   margin-top: 15px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fafafa;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #f9f9f9;
 }
-#bookingForm fieldset label {
-  font-weight: normal;
+
+fieldset legend {
+  font-weight: bold;
+  color: #444;
+}
+
+fieldset label {
   display: block;
-  margin-bottom: 8px;
+  margin: 8px 0;
   cursor: pointer;
 }
-#bookingForm fieldset input {
-  margin-right: 6px;
+
+input[type="checkbox"] {
+  margin-right: 8px;
 }
-#bookingForm button {
-  margin-top: 15px;
-  padding: 10px;
+
+input[type="submit"] {
   background: #0077cc;
   color: white;
   border: none;
-  border-radius: 4px;
-  font-size: 1em;
+  padding: 12px;
+  font-size: 1.1em;
+  border-radius: 6px;
   cursor: pointer;
+  width: 100%;
+  margin-top: 15px;
 }
-#bookingForm button:hover {
+
+input[type="submit"]:hover {
   background: #005fa3;
 }
-#successMessage {
-  color: green;
+
+#startTimeInfo,
+#endTimeInfo {
   margin-top: 10px;
-  text-align: center;
   font-weight: bold;
+  color: #333;
+}
+
+#successMessage {
+  display: none;
+  color: green;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Mobile: Zeit-Slot-Darstellung anklickbar besser erkennen */
+@media (max-width: 600px) {
+  .fc .fc-timegrid-slot {
+    cursor: pointer;
+  }
+  .fc .fc-timegrid-slot:hover {
+    background: rgba(0, 123, 204, 0.1) !important;
+  }
 }
