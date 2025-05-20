@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   const calendarEl = document.getElementById("calendar");
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -17,10 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
       right: ""
     },
     events: fetchEvents,
-    dateClick: info => showForm(info.dateStr),
-    eventDidMount: arg => {
-      arg.el.setAttribute("title", arg.event.title.replace("\n", " "));
-    }
+    dateClick: info => showForm(info.dateStr)
   });
 
   calendar.render();
@@ -49,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("selectedDate").value = date;
     document.getElementById("selectedTime").value = time.substr(0,5);
     document.getElementById("bookingFormWrapper").style.display = "block";
-    updateEndTime();
+    updateTimes();
     document.getElementById("name").focus();
   }
 
@@ -79,25 +76,25 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  document.getElementById("duration").addEventListener("change", updateEndTime);
+  document.getElementById("duration").addEventListener("change", updateTimes);
 
-  function updateEndTime() {
+  function updateTimes() {
     const startStr = document.getElementById("selectedTime").value;
-    const dur = parseInt(document.getElementById("duration").value, 10);
-    const startInfo = document.getElementById("startTimeInfo");
-    const endInfo   = document.getElementById("endTimeInfo");
+    const dur      = parseInt(document.getElementById("duration").value, 10);
+    const startEl  = document.getElementById("startTimeInfo");
+    const endEl    = document.getElementById("endTimeInfo");
     if (!startStr || isNaN(dur)) {
-      startInfo.textContent = "";
-      endInfo.textContent   = "";
+      startEl.textContent = "";
+      endEl.textContent   = "";
       return;
     }
     const [h, m] = startStr.split(":").map(Number);
-    const dt = new Date();
+    const dt     = new Date();
     dt.setHours(h);
     dt.setMinutes(m + dur);
     const endH = String(dt.getHours()).padStart(2,"0");
     const endM = String(dt.getMinutes()).padStart(2,"0");
-    startInfo.textContent = `Start: ${h.toString().padStart(2,"0")}:${m.toString().padStart(2,"0")} Uhr`;
-    endInfo.textContent   = `Ende: ${endH}:${endM} Uhr`;
+    startEl.textContent = `Start: ${h.toString().padStart(2,"0")}:${m.toString().padStart(2,"0")} Uhr`;
+    endEl.textContent   = `Ende: ${endH}:${endM} Uhr`;
   }
 });
