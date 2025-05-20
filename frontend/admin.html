@@ -5,12 +5,11 @@
   <title data-i18n="admin.heading">Admin-Bereich</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
-  <style>
-    /* (euer bestehendes CSS bleibt unverändert) */
-  </style>
 </head>
 <body>
-  <div id="languageSwitcher" style="text-align:right; padding:10px;">
+
+  <!-- Sprache umschalten -->
+  <div style="text-align:right; padding:10px;">
     <label for="lang">🌍</label>
     <select id="lang">
       <option value="de">Deutsch</option>
@@ -22,31 +21,30 @@
   <h1 data-i18n="admin.heading">Admin-Bereich</h1>
 
   <!-- Login -->
-  <div id="authSection">
+  <div id="authSection" style="max-width:800px;margin:30px auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.1);">
     <p data-i18n="admin.loginText">Bitte Admin-Passwort eingeben:</p>
-    <input type="password" id="adminPassword" placeholder="••••••••">
-    <button onclick="checkPassword()" data-i18n="admin.button">Einloggen</button>
+    <input type="password" id="adminPassword" placeholder="••••••••" style="width:100%;padding:10px;font-size:1em;margin-top:10px;">
+    <button onclick="checkPassword()" data-i18n="admin.button" style="margin-top:15px;padding:10px 15px;font-size:1em;background:#0077cc;color:#fff;border:none;border-radius:5px;cursor:pointer;">Einloggen</button>
     <p id="authStatus" style="color:red;"></p>
   </div>
 
-  <!-- Admin Content -->
-  <div id="adminContent" style="display:none; max-width:800px; margin:30px auto;">
-    <button class="logout-btn" onclick="logout()" data-i18n="admin.logout">Logout</button>
+  <!-- Admin-Bereich -->
+  <div id="adminContent" style="display:none;max-width:800px;margin:30px auto;">
 
-    <!-- Neu: All-Day-Blocker -->
-    <section id="blockSection" style="background:#fff;padding:20px;margin-bottom:20px;border-radius:8px;">
+    <button class="logout-btn" onclick="logout()" data-i18n="admin.logout" style="float:right;margin-bottom:20px;padding:5px 10px;background:#888;color:#fff;border:none;border-radius:5px;cursor:pointer;">Logout</button>
+
+    <!-- All-Day-Blocker -->
+    <section id="blockSection" style="background:#fff;padding:20px;margin-bottom:20px;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.1);">
       <h2 data-i18n="admin.blockHeading">Tag sperren</h2>
-      <form id="blockForm">
-        <label for="blockDate" data-i18n="admin.blockLabel">Datum wählen:</label>
-        <input type="date" id="blockDate" required>
-        <button type="submit" data-i18n="admin.blockButton">Sperren</button>
-      </form>
-      <p id="blockStatus"></p>
+      <label for="blockDate" data-i18n="admin.blockLabel">Datum wählen:</label>
+      <input type="date" id="blockDate" style="width:200px;padding:8px;margin-left:10px;">
+      <button onclick="blockDay()" data-i18n="admin.blockButton" style="margin-left:10px;padding:8px 12px;background:#0077cc;color:#fff;border:none;border-radius:5px;cursor:pointer;">Sperren</button>
+      <p id="blockStatus" style="margin-top:10px;color:green;"></p>
     </section>
 
-    <!-- Bisherige Buchungsliste -->
+    <!-- Tabelle aller Buchungen -->
     <h2 data-i18n="admin.tableHeading">Alle Buchungen</h2>
-    <table id="bookingTable">
+    <table id="bookingTable" style="width:100%;border-collapse:collapse;margin-top:10px;">
       <thead>
         <tr>
           <th data-i18n="admin.colName">Name</th>
@@ -64,23 +62,21 @@
 
   <script src="i18n.js"></script>
   <script>
-    // Passwort, Übersetzung, Auth & Laden wie gehabt
+    // Admin-Passwort
     const ADMIN_PASSWORD = "ErNat1989!";
-    const translations    = window.translations; // aus i18n.js
 
-    // Sprache initial
+    // Sprache initialisieren
     const savedLang = localStorage.getItem("lang") || "de";
     document.getElementById("lang").value = savedLang;
     applyTranslations(savedLang);
+    document.getElementById("lang").addEventListener("change", e => {
+      localStorage.setItem("lang", e.target.value);
+      applyTranslations(e.target.value);
+      loadBookings();
+    });
 
-    document.getElementById("lang")
-      .addEventListener("change", e => {
-        localStorage.setItem("lang", e.target.value);
-        applyTranslations(e.target.value);
-      });
-
-    // Auth prüfen
-    if (localStorage.getItem("adminLoggedIn")==="true") {
+    // Wenn schon eingeloggt, sofort Content anzeigen
+    if (localStorage.getItem("adminLoggedIn") === "true") {
       document.getElementById("authSection").style.display = "none";
       document.getElementById("adminContent").style.display = "block";
       initAdmin();
@@ -88,13 +84,13 @@
 
     function checkPassword() {
       if (document.getElementById("adminPassword").value === ADMIN_PASSWORD) {
-        localStorage.setItem("adminLoggedIn","true");
+        localStorage.setItem("adminLoggedIn", "true");
         document.getElementById("authSection").style.display = "none";
         document.getElementById("adminContent").style.display = "block";
         initAdmin();
       } else {
         document.getElementById("authStatus")
-          .textContent = translations[savedLang].admin.wrongPassword;
+          .textContent = translations[localStorage.getItem("lang")].admin.wrong;
       }
     }
 
@@ -103,77 +99,73 @@
       location.reload();
     }
 
-    // Sobald Admin eingeloggt ist:
     function initAdmin() {
       loadBookings();
-      setupBlockForm();
     }
 
-    // --- Buchungen laden & Tabelle füllen ---
+    // Buchungen aus API laden
     async function loadBookings() {
+      const lang = localStorage.getItem("lang");
       const today = new Date().toISOString().substr(0,10);
       const res   = await fetch("/api/bookings?date="+today);
       const data  = await res.json();
       const tbody = document.querySelector("#bookingTable tbody");
-      const lang  = localStorage.getItem("lang");
 
-      if (data.length===0) {
-        tbody.innerHTML = `<tr><td colspan="7">
-          ${translations[lang].admin.noBookings}
-        </td></tr>`;
+      // Filter nur Bookings, keine Blocker
+      const bookings = data.filter(e => e.type === "booking");
+
+      if (bookings.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7">${translations[lang].admin.noBookings}</td></tr>`;
         return;
       }
 
-      tbody.innerHTML="";
-      data.forEach(b => {
-        if (b.type==="booking") {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${b.name}</td>
-            <td>${b.email}</td>
-            <td>${b.date}</td>
-            <td>${b.start}</td>
-            <td>${b.end}</td>
-            <td>${b.token}</td>
-            <td>
-              <button onclick="deleteBooking('${b.token}')">
-                🗑️
-              </button>
-            </td>`;
-          tbody.appendChild(tr);
-        }
+      tbody.innerHTML = "";
+      bookings.forEach(b => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${b.name}</td>
+          <td>${b.email}</td>
+          <td>${b.date}</td>
+          <td>${b.start}</td>
+          <td>${b.end}</td>
+          <td>${b.token}</td>
+          <td>
+            <button onclick="deleteBooking('${b.token}')" style="background:#cc0000;border:none;color:#fff;padding:4px 8px;border-radius:4px;cursor:pointer;">
+              🗑️
+            </button>
+          </td>`;
+        tbody.appendChild(tr);
       });
     }
 
     function deleteBooking(token) {
-      if (!confirm("Löschen?")) return;
+      if (!confirm("Eintrag wirklich löschen?")) return;
       fetch("/api/cancel?token="+token)
-        .then(_=> loadBookings())
-        .catch(_=> alert("Fehler"));
+        .then(_ => loadBookings())
+        .catch(_ => alert("Fehler beim Löschen."));
     }
 
-    // --- Blocker-Formular ---
-    function setupBlockForm() {
-      const form  = document.getElementById("blockForm");
-      const stat  = document.getElementById("blockStatus");
-      const lang  = localStorage.getItem("lang");
-
-      form.addEventListener("submit", async e=>{
-        e.preventDefault();
-        const date = document.getElementById("blockDate").value;
-        const res  = await fetch("/api/block", {
-          method:"POST",
-          headers:{"Content-Type":"application/json"},
-          body: JSON.stringify({date})
-        });
+    // All-Day-Blocker
+    async function blockDay() {
+      const date = document.getElementById("blockDate").value;
+      const lang = localStorage.getItem("lang");
+      if (!date) return alert("Bitte Datum wählen.");
+      try {
+        const res = await fetch(`/api/block?date=${encodeURIComponent(date)}`, { method: "POST" });
         if (res.ok) {
-          stat.textContent = translations[lang].admin.blockSuccess;
+          document.getElementById("blockStatus")
+            .textContent = translations[lang].admin.blockSuccess;
           loadBookings();
         } else {
           const txt = await res.text();
-          stat.textContent = translations[lang].admin.blockError + ": " + txt;
+          document.getElementById("blockStatus")
+            .textContent = translations[lang].admin.blockError + ": " + txt;
         }
-      });
+      } catch (err) {
+        console.error(err);
+        document.getElementById("blockStatus")
+          .textContent = translations[lang].admin.blockError;
+      }
     }
   </script>
 </body>
