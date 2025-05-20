@@ -1,51 +1,66 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta charset="UTF-8" />
   <title>Besuchskalender</title>
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- FullCalendar CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- eigenes CSS -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>Besuchskalender</h1>
+
+  <!-- Kalender-Container -->
   <div id="calendar"></div>
 
-  <div id="bookingFormWrapper" style="display:none;">
+  <!-- Formular-Wrapper, wird per JS sichtbar -->
+  <div id="bookingFormWrapper">
     <h2>Besuch eintragen</h2>
     <form id="bookingForm">
       <label for="name">Vorname:</label>
-      <input type="text" id="name" name="name" required/>
+      <input type="text" id="name" name="name" required />
 
       <label for="email">E-Mail:</label>
-      <input type="email" id="email" name="email" required/>
+      <input type="email" id="email" name="email" required />
 
       <label for="duration">Dauer:</label>
-      <select id="duration">
-        <option value="30">30 Min.</option>
-        <option value="60" selected>1 Std.</option>
-        <option value="90">1,5 Std.</option>
-        <option value="120">2 Std.</option>
+      <select id="duration" name="duration" required>
+        <option value="">-- Dauer wählen --</option>
+        <option value="30">30 Minuten</option>
+        <option value="60" selected>1 Stunde</option>
+        <option value="90">1,5 Stunden</option>
+        <option value="120">2 Stunden</option>
+        <option value="150">2,5 Stunden</option>
+        <option value="180">3 Stunden</option>
       </select>
 
-      <div id="timeInfo">
-        <div id="startTime"></div>
-        <div id="endTime"></div>
-      </div>
+      <div id="startTimeInfo"></div>
+      <div id="endTimeInfo"></div>
 
       <fieldset>
-        <legend>Bestätigungen:</legend>
-        <label><input type="checkbox" required/> Ich bin gesund und symptomfrei.</label>
-        <label><input type="checkbox" required/> Ich bin mit Speicherung meiner Daten einverstanden.</label>
-        <label><input type="checkbox" required/> Ich akzeptiere die Bestätigung per E-Mail.</label>
+        <legend>Bitte bestätigen:</legend>
+        <label><input type="checkbox" required /> Ich bin gesund und symptomfrei.</label>
+        <label><input type="checkbox" required /> Ich bin mit der Speicherung meiner Daten einverstanden.</label>
+        <label><input type="checkbox" required /> Ich akzeptiere die Bestätigung per E-Mail.</label>
       </fieldset>
 
-      <button type="submit">Eintragen</button>
+      <div id="successMessage"></div>
+      <input type="submit" value="Eintragen" />
     </form>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <!-- FullCalendar und Plugins -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.global.min.js"></script>
+
+  <!-- eigenes JS -->
   <script src="calendar.js"></script>
 </body>
 </html>
